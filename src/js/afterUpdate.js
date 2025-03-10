@@ -5,24 +5,6 @@ import greenTickVar from '/src/image/check-solid.svg';
 
 const div = document.getElementById('div');
 
-// class Form {
-//     constructor(firstName, lastName, userName, birthday, street, houseNumber, city, zipcode, county, country, telephone, emailSet, emailConfirm, passwordSet, passwordConfirm) {
-//         this.firstName = firstName;
-//         this.lastName = lastName;
-//         this.userName = userName;
-//         this.birthday = birthday;
-//         this.address = address;
-//         this.city = city;
-//         this.zipcode = zipcode;
-//         this.county = county;
-//         this.country = country;
-//         this.telephone = telephone;
-//         this.emailSet = emailSet;
-//         this.emailConfirm = emailConfirm;
-//         this.passwordSet = passwordSet;
-//         this.passwordConfirm = passwordConfirm;
-//     }
-
 const MsgPop = (function() {
     const requiredMsg = (text) => {
         if(text === '') return '';

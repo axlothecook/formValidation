@@ -1,4 +1,4 @@
-html, body, #div{
+html, body{
     height: 100%;
     user-select: none;
 }
@@ -13,8 +13,7 @@ body{
     --side-bar: #eee;
     --btn-topbar: #607AB6;
 
-    min-height: 100vh;
-    background-color: #252432;
+    background-color: #eee;
     color: black;
     box-sizing: border-box;
     display: flex; 
@@ -25,4 +24,264 @@ body{
 h1, h2, h3{
     margin-block-start: 0em;
     margin-block-end: 0em;
+}
+
+input {
+    font-weight: 500;
+    font-size: 18px;
+    border: none;
+    width: 90%;
+    /* border: 1px solid salmon; */
+    background-color: transparent;
+}
+
+input:hover, input:focus, input:active {
+    outline: none;
+}
+
+.input-container {
+    height: 24px;
+    width: inherit;
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+    border-bottom: 1px solid grey;
+    /* border: 1px solid blue; */
+}
+
+#div{
+    display: flex;
+    flex-flow: column;
+    padding: 3rem 5rem;
+    user-select: none;
+    /* border: 1px solid yellow; */
+}
+
+#wrapper{
+    /* border: 1px solid red; */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form {
+    /* border: 1px solid orange; */
+    width: fit-content;
+    display: grid;
+    grid-template-columns: 23rem 13rem;
+    gap: 10px;
+}
+
+button {
+    background-color: sandybrown;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-weight: 550;
+    font-size: 20px;
+}
+
+button:hover {
+    background-color: rgb(184, 125, 73);
+}
+
+object{
+    pointer-events: none;
+    cursor: pointer;
+}
+
+select {
+    width: 170px; 
+    padding: 13px 20px 13px 0px;
+    font-size: 18px; 
+    border-color: #eee;       /* changes with the background */
+    border-bottom: 1px solid #252432;
+    background-color: transparent;
+}
+
+#submit-btn-div {
+    grid-area: 8 / 1 / 9 / 3;
+    padding: 80px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#form-title-div {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 70px;
+}
+
+.info-container{
+    /* border: 3px solid green; */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.name-container {
+    grid-area: 1 / 1 / 2 / 3;
+}
+
+.username-container {
+    grid-area: 2 / 1 / 3 / 3;
+}
+
+.birthday-container {
+    grid-area: 3 / 1 / 4 / 3;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-security{
+    -webkit-text-security: disc;
+}
+
+.address-houseN-container {
+    grid-area: 4 / 1 / 5 / 3;
+}
+
+.telephone-container {
+    grid-area: 5 / 1 / 6 / 3;
+}
+
+.email-container {
+    grid-area: 6 / 1 / 7 / 3;
+}
+
+.password-container {
+    grid-area: 7 / 1 / 8 / 3;
+}
+
+.label-text {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.wrapper-flex-column {
+    /* border: 1px solid orange; */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.wrapper-grid {
+    /* border: 1px solid orange; */
+    display: grid;
+    grid-template-columns: 65% 30%;
+    gap: 30px;
+}
+
+.input-container-w-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 80px;
+    /* border: 1px solid purple; */
+}
+
+.bday-w-label {
+    height: 100px;
+}
+
+.smaller-label-text {
+    font-size: 13px;
+    color: grey;
+}
+
+.birthday-input-container {
+    display: flex;
+    justify-content: space-between;
+    height: 90px;
+}
+
+.bigger-div-74 {
+    grid-column: 1 / 2;
+}
+
+.smaller-div-20 { 
+    grid-column: 2 / 3;
+    /* border: 1px solid red; */
+}
+
+/* for svg's */
+.warning-div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* border: 1px solid blue; */
+}
+
+.warning-div:hover{
+    cursor: pointer;
+}
+
+.warning-svg, .round-warning-svg {
+    width: 16px;
+    height: 16px;
+    filter: invert(11%) sepia(84%) saturate(4269%) hue-rotate(350deg) brightness(109%) contrast(95%);
+}
+
+.warning-text {
+    color: #B91618;
+    font-size: 15px;
+}
+
+.red-star { color: grey; }
+
+.green-tick-svg {
+    /* border: 1px solid red; */
+    width: 20px;
+    height: 20px;
+    filter: invert(66%) sepia(71%) saturate(762%) hue-rotate(64deg) brightness(103%) contrast(92%);
+}
+
+
+/* addition for password  */
+.grandparent{
+    position: relative;
+}
+
+#parent-div{
+    /* border: 1px solid red; */
+    position: absolute;
+    right: -17rem;
+}
+
+.child-div {
+    /* border: 1px solid blue; */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    visibility: hidden;
+}
+
+.child-div.show {
+    visibility: visible;
+}
+
+.dot-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    background-color: grey;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.child-h3 {
+    font-size: 15px;
+    font-weight: 300;
+    color: grey;
 }

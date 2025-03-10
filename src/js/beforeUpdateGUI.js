@@ -24,8 +24,7 @@ const div = document.getElementById('div');
 //     }
 
 const MsgPop = (function() {
-    const requiredMsg = (text) => {
-        if(text === '') return '';
+    const requiredMsg = () => {
         const warningDiv = document.createElement('div');
         warningDiv.classList.add('warning-div');
 
@@ -37,7 +36,7 @@ const MsgPop = (function() {
 
             const warningText = document.createElement('h3');
             warningText.classList.add('warning-text');
-            warningText.textContent = `${text}`;
+            warningText.textContent = `Empty Field`;
             warningDiv.appendChild(warningText);
 
         return warningDiv;
@@ -103,177 +102,13 @@ const MsgPop = (function() {
     }
 })();
 
-const ChangeDivClrs = (function(){
-    const changeToRed = (text, dot) => {
-        text.style.color = 'red';
-        dot.style.backgroundColor = 'red';
-    };
-
-    const changeToGreen = (text, dot) => {
-        text.style.color = 'green';
-        dot.style.backgroundColor = 'green';
-    };
-
-    return {
-        changeToRed,
-        changeToGreen
-    }
-
-})();
-
-const ValidationCheck = (function(){ 
-    const arr = [];
-    for(let i = 1; i <= 6; i++) {
-        let object = {
-            text: document.getElementById(`dot-div-text-${i}`),
-            dot: document.getElementById(`dot-div-${i}`)
-        }
-        arr.push(object);
-    }
-
-    // allows letters, white space, number, dash and dot, no other special char: for first and last name, and street name
-    const allowLetterAndDot = (input) => { 
-        const msgArr = ['Empty field', 'Minimum required amount of characters: 2. Current input too short', 'Invalid character'];
-        if(input.value === '') {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if(input.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[1]);
-        } else if (/^[^?!@#\|&()<>/$%^_,]+$/gm.test(input.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
-    }
-
-    // allows letters, number, special characters, but no white space: for username
-    const usernameChecker = (text, username) => {
-        const msgArr = ['Empty field', 'Minimum required amount of characters: 6. Current input too short', 'No space between characters', `${username} is taken`];
-        if(text.value === '') {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if(text.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[1]);
-        } else if(username === 'testing') {
-            return MsgPop.requiredMsg(msgArr[3]);
-        } else if (/^[^\s]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
-    }
-
-    // allows letters and white space, no number or special char: for city 
-    const forCity = (text) => { 
-        const msgArr = ['Empty field', 'Current input too short. Minimum length: 2', 'Invalid character'];
-        if(text.value === '') {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if(text.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[1]);
-        } else if (/^[^?!@|#&(/)$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
-    }
-
-    // allows letters and white space, no number or special char: for county
-    const forCounty = (text) => { 
-        const msgArr = ['Current input too short. Minimum length: 2', 'Invalid character'];
-        if(text.value === '') { 
-            return null;
-        } if(text.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if (/^[^?!@|#&(/)$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[1]);
-    }
-
-    // allow only letters: for country
-    const allowOnlyLetter = (text) => {    
-        if(text.value === '') {
-            return MsgPop.requiredMsg("Empty field");
-        } else if (/^[^?!@|#&()$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg("Only alphabetical characters allowed");
-    }
-
-    // allow a few special char, numbers and letters, but no white space: for zipcode
-    const forZipcode = (text) => {
-        if(text.value === '') {
-            return MsgPop.requiredMsg('Empty field');
-        } else if (/^[^?!@|#&$\<>%^_,]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg('Invalid character');
-    }
-
-    // allow a few special char, numbers and letters, but no white space: for house number
-    const forHouseNumber = (text) => {
-        if(text.value === '') {
-            return null;
-        } else if (/^[^?!@|#&$\<>%^_,]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg('Invalid character');
-    }
-
-    // for email
-    const emailChecker = (text) => { 
-        const msgArr = ['Empty field', 'Invalid character', `Please enter the part prior to '@'`, `Your email address is missing an '@'`, `The email address can contain only one '@'`, `Please enter the part following '@'`, `'.' is in an incorrect position. Please enter characters between '@' and '.'`];
-        if(text.value === '') { 
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if(/[?!#&()$%^,]/gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[1]);
-        }  else if (/^[^@]+$/gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[3]);
-        } else if (!(/[^\s][@]/gm.test(text.value))) {
-            return MsgPop.requiredMsg(msgArr[2]);
-        } else if (/(?:.*(?:(?:@))){2}/gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[4]);
-        } else if (/@$/gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[5]);
-        } else if (/@\./gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[6]);
-        } else return;
-    }
-    
-    // for password
-    const passwordChecker = (text, objectArr) => {
-        if(text.value === '') return null;
-
-        if(text.validity.tooShort) {
-            ChangeDivClrs.changeToRed(objectArr[0].text, objectArr[0].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[0].text, objectArr[0].dot);
-
-        if(/[a-z]+/gm.test(text.value)) {
-            ChangeDivClrs.changeToGreen(objectArr[1].text, objectArr[1].dot);
-        } else ChangeDivClrs.changeToRed(objectArr[1].text, objectArr[1].dot);
-
-        if(/[A-Z]+/gm.test(text.value)) {
-            ChangeDivClrs.changeToGreen(objectArr[2].text, objectArr[2].dot);
-        } else ChangeDivClrs.changeToRed(objectArr[2].text, objectArr[2].dot);
-
-        if(/^[^\d]+$/gm.test(text.value)) {
-            ChangeDivClrs.changeToRed(objectArr[3].text, objectArr[3].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[3].text, objectArr[3].dot);
-
-        if(/^[^?!@#\|&()/$%^_,]+$/gm.test(text.value)) {
-            ChangeDivClrs.changeToRed(objectArr[4].text, objectArr[4].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[4].text, objectArr[4].dot);
-
-        if (!(/^[^\s]+$/gm.test(text.value))) {
-            ChangeDivClrs.changeToRed(objectArr[5].text, objectArr[5].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[5].text, objectArr[5].dot);
-    }
-
-    return {
-        allowOnlyLetter,
-        allowLetterAndDot,
-        forCity,
-        forCounty,
-        forZipcode,
-        forHouseNumber,
-        emailChecker,
-        usernameChecker,
-        passwordChecker
-    }
-})();
-
-
 const FormBasicGui = (function() {
 
     const fullNameDiv = (parent) => {
+        /// first and last name
+        const firstNameWarning = MsgPop.requiredMsg();
+        const lastNameWarning = MsgPop.requiredMsg();
+
         const nameContainer = document.createElement('div');
         nameContainer.classList.add('info-container', 'name-container');
         parent.appendChild(nameContainer);
@@ -306,34 +141,25 @@ const FormBasicGui = (function() {
                         firstNameInputDiv.classList.add('input-container');
                         fnameInputContainer.appendChild(firstNameInputDiv);
 
-                        const firstNameInput = document.createElement('input');
-                        firstNameInput.setAttribute('type', 'text');
-                        firstNameInput.setAttribute('id', 'firstName')
-                        firstNameInput.minLength = '2';
-                        firstNameInput.name = 'given-name';
-                        firstNameInput.required = true;
-                        firstNameInput.placeholder = 'Angelica';
-                        firstNameInputDiv.appendChild(firstNameInput);
-
                         const greenTick1 = MsgPop.greenTick();
-                        var warning1;
-                        var temp;
 
-                        firstNameInput.addEventListener('input', () => {
-                            warning1 = ValidationCheck.allowLetterAndDot(firstNameInput);
-                        });
+                            const firstNameInput = document.createElement('input');
+                            firstNameInput.setAttribute('type', 'text');
+                            firstNameInput.setAttribute('id', 'firstName')
+                            firstNameInput.name = 'given-name';
+                            firstNameInput.required = true;
+                            firstNameInput.placeholder = 'Angelica';
+                            firstNameInputDiv.appendChild(firstNameInput);
 
-                        firstNameInput.addEventListener('keyup', () => {
-                            if(warning1 === undefined) {
-                                if (fnameInputContainer.lastChild === temp) fnameInputContainer.lastChild.remove();
-                                firstNameInputDiv.appendChild(greenTick1);
-                            } else {
-                                if (firstNameInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (fnameInputContainer.lastChild === temp) fnameInputContainer.lastChild.remove();
-                                temp = warning1;
-                                fnameInputContainer.appendChild(warning1);
-                            };
-                        });
+                            firstNameInput.addEventListener('keydown', function() {
+                                if (fnameInputContainer.lastChild === firstNameWarning) firstNameWarning.remove();
+                            });
+                            firstNameInput.addEventListener('keyup', function() {
+                                if (firstNameInput.value === '') {
+                                    if (firstNameInputDiv.lastChild === greenTick1) greenTick1.remove();
+                                    fnameInputContainer.appendChild(firstNameWarning);
+                                } else firstNameInputDiv.appendChild(greenTick1); 
+                            });
 
                 const lnameInputContainer = document.createElement('div');
                 lnameInputContainer.classList.add('input-container-w-label');
@@ -350,33 +176,24 @@ const FormBasicGui = (function() {
                         lastNameInputDiv.classList.add('input-container');
                         lnameInputContainer.appendChild(lastNameInputDiv);
 
+                        const greenTick2 = MsgPop.greenTick();
+
                             const lastNameInput = document.createElement('input');
                             lastNameInput.setAttribute('type', 'text');
                             lastNameInput.setAttribute('id', 'lastName');
-                            lastNameInput.minLength = '2';
                             lastNameInput.name = 'family-name';
                             lastNameInput.required = true;
                             lastNameInput.placeholder = 'Demonlord';
                             lastNameInputDiv.appendChild(lastNameInput);
 
-                            const greenTick2 = MsgPop.greenTick();
-                            var warning2;
-                            var temp2;
-
-                            lastNameInput.addEventListener('input', () => {
-                                warning2 = ValidationCheck.allowLetterAndDot(lastNameInput);
+                            lastNameInput.addEventListener('keydown', function() {
+                                if(lnameInputContainer.lastChild === lastNameWarning) lastNameWarning.remove();
                             });
-
-                            lastNameInput.addEventListener('keyup', () => {
-                                if(warning2 === undefined) {
-                                    if(lnameInputContainer.lastChild === temp2) lnameInputContainer.lastChild.remove();
-                                    lastNameInputDiv.appendChild(greenTick2);
-                                } else {
-                                    if (lastNameInputDiv.lastChild === greenTick2) greenTick1.remove();
-                                    if (lnameInputContainer.lastChild === temp2) lnameInputContainer.lastChild.remove();
-                                    temp2 = warning2;
-                                    lnameInputContainer.appendChild(warning2);
-                                };
+                            lastNameInput.addEventListener('keyup', function() {
+                                if(lastNameInput.value === '') {
+                                    if (lastNameInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                    lnameInputContainer.appendChild(lastNameWarning); 
+                                } else lastNameInputDiv.appendChild(greenTick2); 
                             });
     
             let object = {
@@ -389,6 +206,9 @@ const FormBasicGui = (function() {
     }
 
     const usernameDiv = (parent) => {
+        const userNameRequiredWarning = MsgPop.requiredMsg();
+        const usernameTaken = MsgPop.usernameTaken();
+
         const userNameContainer = document.createElement('div');
         userNameContainer.classList.add('info-container', 'username-container');
         parent.appendChild(userNameContainer);
@@ -416,35 +236,31 @@ const FormBasicGui = (function() {
                     usernameInputDiv.classList.add('input-container');
                     usernameInputContainer.appendChild(usernameInputDiv);
 
-                        const userNameInput = document.createElement('input');
-                        userNameInput.setAttribute('type', 'text');
-                        userNameInput.setAttribute('id', 'userName');
-                        userNameInput.minLength = '6';
-                        userNameInput.name = 'name';
-                        userNameInput.required = true;
-                        userNameInput.placeholder = 'mattheyddrGnSlyr54';
-                        usernameInputDiv.appendChild(userNameInput);
-
                         const greenTick = MsgPop.greenTick();
-                        var warning;
-                        var temp;
+                
+                            const userNameInput = document.createElement('input');
+                            userNameInput.setAttribute('type', 'text');
+                            userNameInput.setAttribute('id', 'userName');
+                            userNameInput.name = 'name';
+                            userNameInput.required = true;
+                            userNameInput.placeholder = 'mattheyddrGnSlyr54';
+                            usernameInputDiv.appendChild(userNameInput);
 
-                        userNameInput.addEventListener('input', () => {
-                            warning = ValidationCheck.usernameChecker(userNameInput, userNameInput.value);
-                        });
-
-                        userNameInput.addEventListener('keyup', () => {
-                            if(warning === undefined) {
-                                if (usernameInputContainer.lastChild === temp) usernameInputContainer.lastChild.remove();
-                                usernameInputDiv.appendChild(greenTick);
-                            } else {
-                                if (usernameInputDiv.lastChild === greenTick) greenTick.remove();
-                                if (usernameInputContainer.lastChild === temp) usernameInputContainer.lastChild.remove();
-                                temp = warning;
-                                usernameInputContainer.appendChild(warning);
-                            };
-                        });
-                            
+                            userNameInput.addEventListener('keydown', function() {
+                                if(usernameInputContainer.lastChild === userNameRequiredWarning) userNameRequiredWarning.remove();
+                                if(usernameInputContainer.lastChild === usernameTaken) usernameTaken.remove();
+                            });
+                            userNameInput.addEventListener('keyup', function() {
+                                if(userNameInput.value === '') {
+                                    if (usernameInputDiv.lastChild === greenTick) greenTick.remove();
+                                    usernameInputContainer.appendChild(userNameRequiredWarning);
+                                } else {
+                                    if (userNameInput.value === 'testing') {
+                                        if (usernameInputDiv.lastChild === greenTick) greenTick.remove();
+                                        usernameInputContainer.appendChild(usernameTaken); 
+                                    } else usernameInputDiv.appendChild(greenTick); 
+                                }
+                            });
                 
                         let object = {
                             container: userNameContainer,
@@ -474,7 +290,7 @@ const FormBasicGui = (function() {
         birthdayContainer.appendChild(birthdayInputContainer);
 
             const dayInputContainer = document.createElement('div');
-            dayInputContainer.classList.add('input-container-w-label');
+            dayInputContainer.classList.add('input-container-w-label', 'bday-w-label');
             birthdayInputContainer.appendChild(dayInputContainer);
 
             const roundWarning1 = MsgPop.incorrectValue();
@@ -571,6 +387,8 @@ const FormBasicGui = (function() {
     }
 
     const addressDiv = (parent) => {
+        const streetWarning = MsgPop.requiredMsg();
+
         const addressContainer = document.createElement('div');
         addressContainer.classList.add('info-container', 'address-houseN-container');
         parent.appendChild(addressContainer);
@@ -606,6 +424,8 @@ const FormBasicGui = (function() {
                     streetNameInputDiv.classList.add('input-container');
                     streetInputContainer.appendChild(streetNameInputDiv);
 
+                    const greenTick1 = MsgPop.greenTick();
+
                         const streetNameInput = document.createElement('input');
                         streetNameInput.setAttribute('type', 'text');
                         streetNameInput.setAttribute('id', 'streetName');
@@ -614,24 +434,14 @@ const FormBasicGui = (function() {
                         streetNameInput.placeholder = '305 Edgemont St.';
                         streetNameInputDiv.appendChild(streetNameInput);
                         
-                        const greenTick1 = MsgPop.greenTick();
-                        var warning1;
-                        var temp;
-
-                        streetNameInput.addEventListener('input', () => {
-                            warning1 = ValidationCheck.allowLetterAndDot(streetNameInput);
+                        streetNameInput.addEventListener('keydown', function() {
+                            if(streetInputContainer.lastChild === streetWarning) streetWarning.remove();
                         });
-
-                        streetNameInput.addEventListener('keyup', () => {
-                            if(warning1 === undefined) {
-                                if (streetInputContainer.lastChild === temp) streetInputContainer.lastChild.remove();
-                                streetNameInputDiv.appendChild(greenTick1);
-                            } else {
+                        streetNameInput.addEventListener('keyup', function() {
+                            if(streetNameInput.value === '') {
                                 if (streetNameInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (streetInputContainer.lastChild === temp) streetInputContainer.lastChild.remove();
-                                temp = warning1;
-                                streetInputContainer.appendChild(warning1);
-                            };
+                                streetInputContainer.appendChild(streetWarning); 
+                            } else streetNameInputDiv.appendChild(greenTick1); 
                         });
 
             const houseNInputContainer = document.createElement('div');
@@ -648,6 +458,8 @@ const FormBasicGui = (function() {
                     houseNInputDiv.classList.add('input-container');
                     houseNInputContainer.appendChild(houseNInputDiv);
 
+                    const greenTick2 = MsgPop.greenTick();
+
                         const houseNInput = document.createElement('input');
                         houseNInput.setAttribute('type', 'text');
                         houseNInput.setAttribute('id', 'houseNumber');
@@ -655,27 +467,14 @@ const FormBasicGui = (function() {
                         houseNInput.placeholder = '66A';
                         houseNInputDiv.appendChild(houseNInput);
 
-                        const greenTick2 = MsgPop.greenTick();
-                        var warning2;
-                        var temp2;
-
-                        houseNInput.addEventListener('input', () => {
-                            warning2 = ValidationCheck.forHouseNumber(houseNInput);
-                        });
-
-                        houseNInput.addEventListener('keyup', () => {
-                            if(warning2 === null) {
-                                if (houseNInputContainer.lastChild === temp2) houseNInputContainer.lastChild.remove();
+                        // houseNInput.addEventListener('keydown', function() {
+                        //     if(houseNInputContainer.lastChild === streetWarning) streetWarning.remove();
+                        // });
+                        houseNInput.addEventListener('keyup', function() {
+                            if(houseNInput.value === '') {
                                 if (houseNInputDiv.lastChild === greenTick2) greenTick2.remove();
-                            } else if(warning2 === undefined) {
-                                if (houseNInputContainer.lastChild === temp2) houseNInputContainer.lastChild.remove();
-                                houseNInputDiv.appendChild(greenTick2);
-                            } else {
-                                if (houseNInputDiv.lastChild === greenTick2) greenTick2.remove();
-                                if (houseNInputContainer.lastChild === temp2) houseNInputContainer.lastChild.remove();
-                                temp2 = warning2;
-                                houseNInputContainer.appendChild(warning2);
-                            };
+                                // houseNInputContainer.appendChild(streetWarning); 
+                            } else houseNInputDiv.appendChild(greenTick2); 
                         });
     
             let object = {
@@ -746,6 +545,8 @@ const FormBasicGui = (function() {
 
     const cityNPostalCodeDiv = () => {
         var addressDiv = document.querySelector('.address-houseN-container');
+        const cityWarning = MsgPop.requiredMsg();
+        const zipcodeWarning = MsgPop.requiredMsg();
 
         const cityContainer = document.createElement('div');
         cityContainer.classList.add('info-container', 'city-zipcode-container');
@@ -769,34 +570,25 @@ const FormBasicGui = (function() {
                     const cityInputDiv = document.createElement('div');
                     cityInputDiv.classList.add('input-container');
                     cityInputContainer.appendChild(cityInputDiv);
+
+                    const greenTick1 = MsgPop.greenTick();
                     
                         const cityInput = document.createElement('input');
                         cityInput.setAttribute('type', 'text');
                         cityInput.setAttribute('id', 'cityName');
-                        cityInput.minLength = '2';
                         cityInput.name = 'city';
                         cityInput.required = true;
                         cityInput.placeholder = 'Moorpark';
                         cityInputDiv.appendChild(cityInput);
 
-                        const greenTick1 = MsgPop.greenTick();
-                        var warning1;
-                        var temp;
-
-                        cityInput.addEventListener('input', () => {
-                            warning1 = ValidationCheck.forCity(cityInput);
+                        cityInputDiv.addEventListener('keydown', function() {
+                            if(cityInputContainer.lastChild === cityWarning) cityWarning.remove();
                         });
-
-                        cityInput.addEventListener('keyup', () => {
-                            if(warning1 === undefined) {
-                                if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
-                                cityInputDiv.appendChild(greenTick1);
-                            } else {
+                        cityInputDiv.addEventListener('keyup', function() {
+                            if(cityInput.value === '') {
                                 if (cityInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
-                                temp = warning1;
-                                cityInputContainer.appendChild(warning1);
-                            };
+                                cityInputContainer.appendChild(cityWarning); 
+                            } else cityInputDiv.appendChild(greenTick1); 
                         });
     
             const zipcodeInputContainer = document.createElement('div');
@@ -809,35 +601,27 @@ const FormBasicGui = (function() {
                 zipcodeInputContainer.appendChild(zipcodeLabel);
                 MsgPop.turnStarRedClr(zipcodeLabel);
 
-                    const zipcodeInputDiv = document.createElement('div');
-                    zipcodeInputDiv.classList.add('input-container');
-                    zipcodeInputContainer.appendChild(zipcodeInputDiv);
+                    const zipcodenputDiv = document.createElement('div');
+                    zipcodenputDiv.classList.add('input-container');
+                    zipcodeInputContainer.appendChild(zipcodenputDiv);
+
+                    const greenTick2 = MsgPop.greenTick();
 
                         const zipcodeInput = document.createElement('input');
                         zipcodeInput.setAttribute('type', 'text');
                         zipcodeInput.name = 'zipcode';
                         zipcodeInput.required = true;
                         zipcodeInput.placeholder = '91706';
-                        zipcodeInputDiv.appendChild(zipcodeInput);
+                        zipcodenputDiv.appendChild(zipcodeInput);
 
-                        const greenTick2 = MsgPop.greenTick();
-                        var warning2;
-                        var temp2;
-
-                        zipcodeInput.addEventListener('input', () => {
-                            warning2 = ValidationCheck.forZipcode(zipcodeInput);
+                        zipcodeInput.addEventListener('keydown', function() {
+                            if(zipcodeInputContainer.lastChild === zipcodeWarning) zipcodeWarning.remove();
                         });
-
-                        zipcodeInput.addEventListener('keyup', () => {
-                            if(warning2 === undefined) {
-                                if (zipcodeInputContainer.lastChild === temp2) zipcodeInputContainer.lastChild.remove();
-                                zipcodeInputDiv.appendChild(greenTick2);
-                            } else {
-                                if (zipcodeInputDiv.lastChild === greenTick2) greenTick2.remove();
-                                if (zipcodeInputContainer.lastChild === temp2) zipcodeInputContainer.lastChild.remove();
-                                temp2 = warning2;
-                                zipcodeInputContainer.appendChild(warning2);
-                            };
+                        zipcodeInput.addEventListener('keyup', function() {
+                            if(zipcodeInput.value === '') {
+                                if (zipcodenputDiv.lastChild === greenTick2) greenTick2.remove();
+                                zipcodeInputContainer.appendChild(zipcodeWarning); 
+                            } else zipcodenputDiv.appendChild(greenTick2); 
                         });
 
     
@@ -852,6 +636,7 @@ const FormBasicGui = (function() {
 
     const countyNCountryDiv = () => {
         var addressDiv = document.querySelector('.address-houseN-container');
+        const warning = MsgPop.requiredMsg();
 
         const countryContainer = document.createElement('div');
         countryContainer.classList.add('info-container', 'county-country-container');
@@ -875,34 +660,18 @@ const FormBasicGui = (function() {
                     countyInputDiv.classList.add('input-container');
                     countyInputContainer.appendChild(countyInputDiv);
 
+                    const greenTick1 = MsgPop.greenTick();
+
                         const countyInput = document.createElement('input');
                         countyInput.setAttribute('type', 'text');
                         countyInput.setAttribute('id', 'countyName');
-                        countyInput.minLength = '2';
                         countyInput.placeholder = 'California';
                         countyInputDiv.appendChild(countyInput);
 
-                        const greenTick1 = MsgPop.greenTick();
-                        var warning1;
-                        var temp;
-
-                        countyInput.addEventListener('input', () => {
-                            warning1 = ValidationCheck.forCounty(countyInput);
-                        });
-
-                        countyInput.addEventListener('keyup', () => {
-                            if(warning1 === null) {
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                        countyInput.addEventListener('keyup', function() {
+                            if(countyInput.value === '') {
                                 if (countyInputDiv.lastChild === greenTick1) greenTick1.remove();
-                            } else if(warning1 === undefined) {
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                                countyInputDiv.appendChild(greenTick1);
-                            } else {
-                                if (countyInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                                temp = warning1;
-                                countyInputContainer.appendChild(warning1);
-                            };
+                            } else countyInputDiv.appendChild(greenTick1); 
                         });
 
         const countryInputContainer = document.createElement('div');
@@ -919,6 +688,8 @@ const FormBasicGui = (function() {
                 const countryInputDiv = document.createElement('div');
                 countryInputDiv.classList.add('input-container');
                 countryInputContainer.appendChild(countryInputDiv);
+
+                const greenTick2 = MsgPop.greenTick();
     
                     const countryInput = document.createElement('input');
                     countryInput.setAttribute('type', 'text');
@@ -928,24 +699,14 @@ const FormBasicGui = (function() {
                     countryInput.placeholder = 'USA';
                     countryInputDiv.appendChild(countryInput);
 
-                    const greenTick2 = MsgPop.greenTick();
-                    var warning2;
-                    var temp2;
-
-                    countryInput.addEventListener('input', () => {
-                        warning2 = ValidationCheck.allowOnlyLetter(countryInput);
+                    countryInput.addEventListener('keydown', function() {
+                        if(countryInputContainer.lastChild === warning) warning.remove();
                     });
-
-                    countryInput.addEventListener('keyup', () => {
-                        if(warning2 === undefined) {
-                            if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
-                            countryInputDiv.appendChild(greenTick2);
-                        } else {
+                    countryInput.addEventListener('keyup', function() {
+                        if(countryInput.value === '') {
                             if (countryInputDiv.lastChild === greenTick2) greenTick2.remove();
-                            if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
-                            temp2 = warning2;
-                            countryInputContainer.appendChild(warning2);
-                        };
+                            countryInputContainer.appendChild(warning); 
+                        } else countryInputDiv.appendChild(greenTick2); 
                     });
     
             let object = {
@@ -958,6 +719,9 @@ const FormBasicGui = (function() {
     }
 
     const emailDiv = (parent) => {
+        const warning1 = MsgPop.requiredMsg();
+        const warning2 = MsgPop.requiredMsg();
+
         const emailContainer = document.createElement('div');
         emailContainer.classList.add('info-container', 'email-container');
         parent.appendChild(emailContainer);
@@ -989,6 +753,8 @@ const FormBasicGui = (function() {
                     const emailSetInputDiv = document.createElement('div');
                     emailSetInputDiv.classList.add('input-container');
                     emailInputContainer.appendChild(emailSetInputDiv);
+
+                    const greenTick1 = MsgPop.greenTick();
         
                         const enterEmailInput = document.createElement('input');
                         enterEmailInput.setAttribute('type', 'text');
@@ -998,24 +764,14 @@ const FormBasicGui = (function() {
                         enterEmailInput.placeholder = 'oogieboogie@yahoo.com';
                         emailSetInputDiv.appendChild(enterEmailInput);
 
-                        const greenTick1 = MsgPop.greenTick();
-                        var warning;
-                        var temp;
-
-                        enterEmailInput.addEventListener('input', () => {
-                            warning = ValidationCheck.emailChecker(enterEmailInput);
+                        enterEmailInput.addEventListener('keydown', function() {
+                            if (emailInputContainer.lastChild === warning1) warning1.remove();
                         });
-
-                        enterEmailInput.addEventListener('keyup', () => {
-                            if(warning === undefined) {
-                                if (emailInputContainer.lastChild === temp) emailInputContainer.lastChild.remove();
-                                emailSetInputDiv.appendChild(greenTick1);
-                            } else {
+                        enterEmailInput.addEventListener('keyup', function() {
+                            if (enterEmailInput.value === '') {
                                 if (emailSetInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (emailInputContainer.lastChild === temp) emailInputContainer.lastChild.remove();
-                                temp = warning;
-                                emailInputContainer.appendChild(warning);
-                            };
+                                emailInputContainer.appendChild(warning1);
+                            } else emailSetInputDiv.appendChild(greenTick1); 
                         });
 
 
@@ -1032,24 +788,22 @@ const FormBasicGui = (function() {
                     const emailConfirmInputDiv = document.createElement('div');
                     emailConfirmInputDiv.classList.add('input-container');
                     confirmEmailLabel.appendChild(emailConfirmInputDiv);
+
+                    const greenTick2 = MsgPop.greenTick();
         
                         const confirmEmailInput = document.createElement('input');
                         confirmEmailInput.setAttribute('type', 'text');
-                        confirmEmailInput.classList.add('input-security');
                         confirmEmailInput.required = true;
                         emailConfirmInputDiv.appendChild(confirmEmailInput);
 
-                        const greenTick2 = MsgPop.greenTick();
-                        const noMatch = MsgPop.requiredMsg('The emails do not match');
-
-                        confirmEmailInput.addEventListener('input', () => {
-                            if(confirmEmailInput.value === enterEmailInput.value) {
-                                if (confirmInputContainer.lastChild === noMatch) confirmInputContainer.lastChild.remove();
-                                emailConfirmInputDiv.appendChild(greenTick2);
-                            } else {
+                        confirmEmailInput.addEventListener('keydown', function() {
+                            if (confirmInputContainer.lastChild === warning2) warning2.remove();
+                        });
+                        confirmEmailInput.addEventListener('keyup', function() {
+                            if (confirmEmailInput.value === '') {
                                 if (emailConfirmInputDiv.lastChild === greenTick2) greenTick2.remove();
-                                confirmInputContainer.appendChild(noMatch);
-                            }
+                                confirmInputContainer.appendChild(warning2);
+                            } else emailConfirmInputDiv.appendChild(greenTick2); 
                         });
     
             let object = {
@@ -1062,6 +816,9 @@ const FormBasicGui = (function() {
     }
 
     const passwordDiv = (parent) => {
+        const warning1 = MsgPop.requiredMsg();
+        const warning2 = MsgPop.requiredMsg();
+
         const passwordContainer = document.createElement('div');
         passwordContainer.classList.add('info-container', 'password-container');
         parent.appendChild(passwordContainer);
@@ -1080,75 +837,36 @@ const FormBasicGui = (function() {
         passwordContainer.appendChild(wrapper);
     
             const passwordInputContainer = document.createElement('div');
-            passwordInputContainer.classList.add('input-container-w-label', 'grandparent');
+            passwordInputContainer.classList.add('input-container-w-label');
             wrapper.appendChild(passwordInputContainer);
 
                 const createPasswordLabel = document.createElement('label');
                 createPasswordLabel.classList.add('smaller-label-text');
-                createPasswordLabel.textContent = 'Create password';
+                createPasswordLabel.textContent = 'Confirm email';
                 passwordInputContainer.appendChild(createPasswordLabel);
                 MsgPop.turnStarRedClr(createPasswordLabel);
 
                     const createPasswordInputDiv = document.createElement('div');
                     createPasswordInputDiv.classList.add('input-container');
                     passwordInputContainer.appendChild(createPasswordInputDiv);
+
+                    const greenTick1 = MsgPop.greenTick();
         
                         const createpasswordInput = document.createElement('input');
                         createpasswordInput.setAttribute('type', 'text');
-                        createpasswordInput.minLength = '8';
                         createpasswordInput.required = true;
                         createpasswordInput.placeholder = 'Set password';
                         createPasswordInputDiv.appendChild(createpasswordInput);
 
-                        const parentDiv = document.createElement('div');
-                        parentDiv.setAttribute('id', 'parent-div');
-                        passwordInputContainer.appendChild(parentDiv);
-
-                            const childDiv = document.createElement('div');
-                            childDiv.classList.add('child-div');
-                            parentDiv.appendChild(childDiv);
-
-                                const objectArr = [];
-                                const arrText = ['At least 8 characters', 'At least one lowercase character', 'At least one uppercase character', 'At least one number', 'At least one special character', 'No space between characters']; 
-                                for(let i = 0; i < 6; i++) {
-                                    const div = document.createElement('div');
-                                    div.classList.add('dot-div');
-                                    div.setAttribute('id', `dot-div-text-${i}`);
-                                    childDiv.appendChild(div);
-
-                                        const dotDiv = document.createElement('div');
-                                        dotDiv.classList.add('dot');
-                                        dotDiv.setAttribute('id', `dot-div-${i}`);
-                                        div.appendChild(dotDiv);
-
-                                            const h3 = document.createElement('h3');
-                                            h3.classList.add('child-h3');
-                                            h3.textContent = `${arrText[i]}`;
-                                            div.appendChild(h3);
-
-                                    let object = {
-                                        text: document.getElementById(`dot-div-text-${i}`),
-                                        dot: document.getElementById(`dot-div-${i}`)
-                                    }
-                                    objectArr.push(object);
-                                };
-
-                                const warning = MsgPop.requiredMsg('Empty field');
-                                var temp;
-
-                                createpasswordInput.addEventListener('input', () => {
-                                    childDiv.classList.add('show');
-                                    temp = ValidationCheck.passwordChecker(createpasswordInput, objectArr);
-                                });
-
-                                createpasswordInput.addEventListener('keyup', () => {
-                                    if(temp === null) {
-                                        passwordInputContainer.appendChild(warning);
-                                    } else {
-                                        if (passwordInputContainer.lastChild === warning) passwordInputContainer.lastChild.remove();
-                                    };
-                                });
-                            
+                        createpasswordInput.addEventListener('keydown', function() {
+                            if (passwordInputContainer.lastChild === warning1) warning1.remove();
+                        });
+                        createpasswordInput.addEventListener('keyup', function() {
+                            if (createpasswordInput.value === '') {
+                                if (createPasswordInputDiv.lastChild === greenTick1) greenTick1.remove();
+                                passwordInputContainer.appendChild(warning1);
+                            } else createPasswordInputDiv.appendChild(greenTick1); 
+                        });
 
             const confirmPasswordContainer = document.createElement('div');
             confirmPasswordContainer.classList.add('input-container-w-label');
@@ -1156,32 +874,30 @@ const FormBasicGui = (function() {
 
                 const confirmPasswordLabel = document.createElement('label');
                 confirmPasswordLabel.classList.add('smaller-label-text');
-                confirmPasswordLabel.textContent = 'Confirm password';
+                confirmPasswordLabel.textContent = 'Confirm email';
                 confirmPasswordContainer.appendChild(confirmPasswordLabel);
                 MsgPop.turnStarRedClr(confirmPasswordLabel);
 
                     const confirmPasswordInputDiv = document.createElement('div');
                     confirmPasswordInputDiv.classList.add('input-container');
                     confirmPasswordContainer.appendChild(confirmPasswordInputDiv);
+
+                    const greenTick2 = MsgPop.greenTick();
         
                         const confirmPasswordInput = document.createElement('input');
                         confirmPasswordInput.setAttribute('type', 'text');
-                        confirmPasswordInput.classList.add('input-security');
                         confirmPasswordInput.required = true;
                         confirmPasswordInput.placeholder = 'Confirm password';
                         confirmPasswordInputDiv.appendChild(confirmPasswordInput);
 
-                        const greenTick = MsgPop.greenTick();
-                        const noMatch = MsgPop.requiredMsg('The passwords do not match');
-
-                        confirmPasswordInput.addEventListener('input', () => {
-                            if(confirmPasswordInput.value === createpasswordInput.value) {
-                                if (confirmPasswordContainer.lastChild === noMatch) confirmPasswordContainer.lastChild.remove();
-                                confirmPasswordInputDiv.appendChild(greenTick);
-                            } else {
-                                if (confirmPasswordInputDiv.lastChild === greenTick) greenTick.remove();
-                                confirmPasswordContainer.appendChild(noMatch);
-                            };
+                        confirmPasswordInput.addEventListener('keydown', function() {
+                            if (confirmPasswordContainer.lastChild === warning2) warning2.remove();
+                        });
+                        confirmPasswordInput.addEventListener('keyup', function() {
+                            if (confirmPasswordInput.value === '') {
+                                if (confirmPasswordInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                confirmPasswordContainer.appendChild(warning2);
+                            } else confirmPasswordInputDiv.appendChild(greenTick2); 
                         });
     
             let object = {
