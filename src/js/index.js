@@ -5,24 +5,6 @@ import greenTickVar from '/src/image/check-solid.svg';
 
 const div = document.getElementById('div');
 
-// class Form {
-//     constructor(firstName, lastName, userName, birthday, street, houseNumber, city, zipcode, county, country, telephone, emailSet, emailConfirm, passwordSet, passwordConfirm) {
-//         this.firstName = firstName;
-//         this.lastName = lastName;
-//         this.userName = userName;
-//         this.birthday = birthday;
-//         this.address = address;
-//         this.city = city;
-//         this.zipcode = zipcode;
-//         this.county = county;
-//         this.country = country;
-//         this.telephone = telephone;
-//         this.emailSet = emailSet;
-//         this.emailConfirm = emailConfirm;
-//         this.passwordSet = passwordSet;
-//         this.passwordConfirm = passwordConfirm;
-//     }
-
 const MsgPop = (function() {
     const requiredMsg = (text) => {
         if(text === '') return '';
@@ -133,89 +115,186 @@ const ValidationCheck = (function(){
 
     // allows letters, white space, number, dash and dot, no other special char: for first and last name, and street name
     const allowLetterAndDot = (input) => { 
-        const msgArr = ['Empty field', 'Minimum required amount of characters: 2. Current input too short', 'Invalid character'];
+        const msgArr = ['Empty field', 'Minimum required amount of characters: 2. Current input too short', 'Only [Aa - Zz] and dash allowed', 'Maximum limit reached (50)', 'Name needs to include at least one alphabetical character'];
         if(input.value === '') {
             return MsgPop.requiredMsg(msgArr[0]);
         } else if(input.validity.tooShort) {
             return MsgPop.requiredMsg(msgArr[1]);
-        } else if (/^[^?!@#\|&()<>/$%^_,]+$/gm.test(input.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
-    }
-
-    // allows letters, number, special characters, but no white space: for username
-    const usernameChecker = (text, username) => {
-        const msgArr = ['Empty field', 'Minimum required amount of characters: 6. Current input too short', 'No space between characters', `${username} is taken`];
-        if(text.value === '') {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if(text.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[1]);
-        } else if(username === 'testing') {
+        } else if(input.value.length === 51) {
             return MsgPop.requiredMsg(msgArr[3]);
-        } else if (/^[^\s]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
+        } else if(/^[^[a-zA-Z]+$/gm.test(input.value)) {
+            return MsgPop.requiredMsg(msgArr[4]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]/gm.test(input.value)) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
     }
 
-    // allows letters and white space, no number or special char: for city 
-    const forCity = (text) => { 
-        const msgArr = ['Empty field', 'Current input too short. Minimum length: 2', 'Invalid character'];
+    // allows letters, number, dashes, but no white space: for username
+    const usernameChecker = (text) => {
+        const msgArr = ['Empty field', 'Minimum required amount of characters: 6. Current input too short', 'Only [Aa - Zz], [0 - 9] and dash allowed', `${text.value} is taken`, 'Maximum limit reached (20)', 'Username needs to include at least one alphabetical character'];
         if(text.value === '') {
             return MsgPop.requiredMsg(msgArr[0]);
         } else if(text.validity.tooShort) {
             return MsgPop.requiredMsg(msgArr[1]);
-        } else if (/^[^?!@|#&(/)$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[2]);
+        } else if(text.value.length === 21) {
+            return MsgPop.requiredMsg(msgArr[4]);
+        } else if(/^[^[a-zA-Z]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[5]);
+        } else if(text.value === 'testing') {
+            return MsgPop.requiredMsg(msgArr[3]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
+    }
+
+    const bdayEmpty = {
+        bdayArr: [
+            {
+                'date': false,
+                'input': null
+            },
+            {
+                'date': false,
+                'input': null
+            },
+            {
+                'date': false,
+                'input': null
+            }
+        ],
+
+        checkBdayInput() {
+            this.bdayArr.forEach(obj => {
+                (obj.date === false) ? obj.input.setCustomValidity('Please fill out this field.') : obj.input.setCustomValidity('');
+            });
+        },
+
+        checkDateValidity() {
+            let date = `${this.bdayArr[1].input.value}/${this.bdayArr[0].input.value}/${this.bdayArr[2].input.value}`;
+            console.log(date);
+            if (/^[^a-zA-z]+$/gm.test(date)) {
+                // let check = new Date(date);
+                if(isNaN(new Date(date))) {
+                    console.log('invalid date');
+                } else {
+                    console.log('valid date');
+                }
+                console.log(date);
+            };
+        }
+    }
+
+    // allows only numbers and + character, but no white space: for telephone
+    const forTelephone = (input) => {
+        const msgArr = ['Empty field', `Maximum characters limit exceeded`, `Missing '+' character in front of the number`, 'Invalid character', 'Must include at least one numberical character', `Dial code ${input.value} does not exist`];
+        if(input.value === '') {
+            return MsgPop.requiredMsg(msgArr[0]);
+        } else if((input.value.length > 1) && input.hasAttribute('id')) {
+            var dialcodes = APIcalls.dialCodeList();
+            if(!dialcodes.includes(input.value)) return MsgPop.requiredMsg(msgArr[5]);
+        } else if (input.hasAttribute('id')) {
+            if(!(/^[+\d\s]+$/gm.test(input.value))) return MsgPop.requiredMsg(msgArr[3]);
+            if(/^[^+]+$/gm.test(input.value)) return MsgPop.requiredMsg(msgArr[2]);
+            if(/^[^\d]+$/gm.test(input.value)) return MsgPop.requiredMsg(msgArr[4]);
+            if((input.value.length === 7)) return MsgPop.requiredMsg(msgArr[1]);
+        } else if (!(/^[\d]+$/gm.test(input.value))) {
+            return MsgPop.requiredMsg(msgArr[3]);
+        } else if(input.value.length > 3) {
+            return MsgPop.requiredMsg(msgArr[1]);
+        } else return;
     }
 
     // allows letters and white space, no number or special char: for county
     const forCounty = (text) => { 
-        const msgArr = ['Current input too short. Minimum length: 2', 'Invalid character'];
+        const msgArr = [`Country ${text.value} does not exist`, 'Only alphabetical characters allowed', 'Maximum characters limit exceeded (30)'];
         if(text.value === '') { 
             return null;
-        } if(text.validity.tooShort) {
-            return MsgPop.requiredMsg(msgArr[0]);
-        } else if (/^[^?!@|#&(/)$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg(msgArr[1]);
+        } else if(text.value.length > 1) {
+            var stateArr = APIcalls.statesList();
+            if(!validateWord(stateArr, text)) return MsgPop.requiredMsg(msgArr[0]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,\d.]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[1]);
+        } else if(text.value.length === 31) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
     }
 
     // allow only letters: for country
-    const allowOnlyLetter = (text) => {    
+    const forCountry = (text) => {    
+        const msgArr = ['Empty field', 'Only alphabetical characters allowed', 'Maximum characters limit exceeded (30)', `Country ${text.value} does not exist`];
         if(text.value === '') {
-            return MsgPop.requiredMsg("Empty field");
-        } else if (/^[^?!@|#&()$\<>%.^-_,\d]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg("Only alphabetical characters allowed");
+            return MsgPop.requiredMsg(msgArr[0]);
+        } else if(text.value.length > 1) {
+            var countryArr = APIcalls.countryList();
+            if(!validateWord(countryArr, text)) return MsgPop.requiredMsg(msgArr[3]);
+        } else if(/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.\d]/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[1]);
+        } else if(text.value.length === 31) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
+    }
+
+    // allow only letters: for city
+    const forCity = (text) => {    
+        const msgArr = ['Empty field', 'Only alphabetical characters allowed', 'Maximum characters limit exceeded (30)', `City ${text.value} does not exist`];
+        if(text.value === '') {
+            return MsgPop.requiredMsg(msgArr[0]);
+        } else if(text.value.length > 1) {
+            var cityArr = APIcalls.cityList();
+            if(!validateWord(cityArr, text)) return MsgPop.requiredMsg(msgArr[3]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.\d]/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[1]);
+        } else if(text.value.length === 31) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
+    }
+
+    const validateWord = (arr, word) => {
+        var temp;
+        for(let i=0; i < arr.length; i++) {
+            if(arr[i].substr(0, word.value.length).toLowerCase() === word.value.toLowerCase()) {
+                temp = true;
+                break;
+            } else temp = false;
+        };
+        return temp;
     }
 
     // allow a few special char, numbers and letters, but no white space: for zipcode
     const forZipcode = (text) => {
+        const msgArr = ['Empty field', `Only [Aa-Zz], [0-9], and dash allowed`, 'Maximum characters limit exceeded (10)'];
         if(text.value === '') {
-            return MsgPop.requiredMsg('Empty field');
-        } else if (/^[^?!@|#&$\<>%^_,]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg('Invalid character');
+            return MsgPop.requiredMsg(msgArr[0]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[1]);
+        }  else if(text.value.length === 11) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else return;
     }
 
     // allow a few special char, numbers and letters, but no white space: for house number
     const forHouseNumber = (text) => {
         if(text.value === '') {
             return null;
-        } else if (/^[^?!@|#&$\<>%^_,]+$/gm.test(text.value)) {
-            return;
-        } else return MsgPop.requiredMsg('Invalid character');
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg('Only [Aa-Zz], [0-9] and dash allowed');
+        } else if(text.value.length === 6) {
+            return MsgPop.requiredMsg('Maximum characters limit exceeded (5)');
+        } else return;
     }
 
     // for email
     const emailChecker = (text) => { 
-        const msgArr = ['Empty field', 'Invalid character', `Please enter the part prior to '@'`, `Your email address is missing an '@'`, `The email address can contain only one '@'`, `Please enter the part following '@'`, `'.' is in an incorrect position. Please enter characters between '@' and '.'`];
+        const msgArr = ['Empty field', 'Invalid character', `Please enter the part prior to '@'`, `Your email address is missing an '@'`, `The email address can contain only one '@'`, `Please enter the part following '@'`, `'.' is in an incorrect position. Please enter characters between '@' and '.'`, 'Email needs to include at least one alphabetical character', `Maximum characters limit exceeded (30)`];
         if(text.value === '') { 
             return MsgPop.requiredMsg(msgArr[0]);
-        } else if(/[?!#&()$%^,]/gm.test(text.value)) {
+        } else if(text.value.length === 31) {
+            return MsgPop.requiredMsg(msgArr[8]);
+        } else if(/[|\\\/*?!#$%\]^&(){}();:[<>'"~`+=,]/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[1]);
-        }  else if (/^[^@]+$/gm.test(text.value)) {
+        } else if(/^[^[a-zA-Z]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[7]);
+        } else if (/^[^@]+$/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[3]);
         } else if (!(/[^\s][@]/gm.test(text.value))) {
             return MsgPop.requiredMsg(msgArr[2]);
@@ -248,25 +327,236 @@ const ValidationCheck = (function(){
             ChangeDivClrs.changeToRed(objectArr[3].text, objectArr[3].dot);
         } else ChangeDivClrs.changeToGreen(objectArr[3].text, objectArr[3].dot);
 
-        if(/^[^?!@#\|&()/$%^_,]+$/gm.test(text.value)) {
+        if(/^[^?!@#&%^_,.]+$/gm.test(text.value)) {
             ChangeDivClrs.changeToRed(objectArr[4].text, objectArr[4].dot);
         } else ChangeDivClrs.changeToGreen(objectArr[4].text, objectArr[4].dot);
 
         if (!(/^[^\s]+$/gm.test(text.value))) {
             ChangeDivClrs.changeToRed(objectArr[5].text, objectArr[5].dot);
         } else ChangeDivClrs.changeToGreen(objectArr[5].text, objectArr[5].dot);
+
+        if (!(/^[^|\\\/*$%\](){}();:[<>'"~`+=]+$/gm.test(text.value))) {
+            ChangeDivClrs.changeToRed(objectArr[6].text, objectArr[6].dot);
+        } else ChangeDivClrs.changeToGreen(objectArr[6].text, objectArr[6].dot);
+
+        if (text.value.length > 10) {
+            ChangeDivClrs.changeToRed(objectArr[7].text, objectArr[7].dot);
+        } else ChangeDivClrs.changeToGreen(objectArr[7].text, objectArr[7].dot);
+    }
+
+    //for password confirmation
+    const passwordConfirmChecker = (text) => {
+        if(text.value === '') return null;
+
+        if(text.validity.tooShort) {
+            return false;
+        } else if(/[^a-z]+$/gm.test(text.value)) {
+            return false;
+        } else if(/[A-Z]+/gm.test(text.value)) {
+            return false;
+        } else if(/^[^\d]+$/gm.test(text.value)) {
+            return false;
+        } else if(/^[^?!@#&%^_,.]+$/gm.test(text.value)) {
+            return false;
+        } else if (!(/^[^\s]+$/gm.test(text.value))) {
+            return false;
+        } else if (!(/^[^|\\\/*$%\](){}();:[<>'"~`+=]+$/gm.test(text.value))) {
+            return false;
+        } else if (text.value.length > 10) {
+            return false;
+        } else true;
     }
 
     return {
-        allowOnlyLetter,
         allowLetterAndDot,
+        forCountry,
         forCity,
+        bdayEmpty,
+        forTelephone,
         forCounty,
         forZipcode,
         forHouseNumber,
         emailChecker,
         usernameChecker,
-        passwordChecker
+        passwordChecker,
+        passwordConfirmChecker
+    }
+})();
+
+const APIcalls = (function(){
+    var countryNames = [];
+    var counties = [];
+    var cityNames = [];
+    var dialcodes = [];
+
+    const fetchData = async () => {
+        const countryArr = await fetch('https://restcountries.com/v3.1/all');
+        const countryData = await countryArr.json();
+    
+        countryNames = countryData.map(country => { return country.name.common; });
+    }
+    
+    fetchData();
+    
+    const onInputChanges = (parent, input, func, word, inputDiv, inputDivParent) => {
+        removeDropdown(word);
+        if(input.toLowerCase() === '') return;
+
+        var array = [];
+        (word === 'country') ? (array = countryNames) : (word === 'city') ? (array = cityNames) : array = counties;
+    
+        const filteredArr = [];
+    
+        array.forEach(name => {
+            if(name.substr(0, input.length).toLowerCase() === input.toLowerCase()) {
+                filteredArr.push(name);
+            };
+        });
+    
+        addDropdown(parent, filteredArr, func, word, inputDiv, inputDivParent);
+    }
+    
+    const addDropdown = (parent, arr, func, word, input, inputDivParent) => {
+        const ul = document.createElement('ul');
+        ul.className = 'autocomplete-list';
+        ul.id = `autocomplete-${word}-list`;
+        parent.appendChild(ul);
+    
+        arr.forEach(name => {
+            const li = document.createElement('li');
+            ul.appendChild(li);
+    
+            const button = document.createElement('button');
+            button.textContent = name;
+            li.appendChild(button);
+            button.addEventListener('click', (e) => {
+                func(input, e, word);
+                if (input.nextElementSibling === null) inputDivParent.appendChild(MsgPop.greenTick());
+            });
+        });
+    };
+    
+    const removeDropdown = (word) => {
+        var list = document.querySelector(`#autocomplete-${word}-list`);
+        if (list) list.remove();
+    }
+    
+    const selectCountry = (input, e, word) => {
+        e.preventDefault();
+        input.value = e.target.textContent;
+        removeDropdown(word);
+        fetchCitiesForSpecificCountry(e.target.textContent);
+        fetchDialCodeForSpecificCountry(e.target.textContent);
+        fetchCountiesForSpecificCountry(e.target.textContent);
+    }
+    
+    const selectCity = (input, e, word) => {
+        e.preventDefault();
+        input.value = e.target.textContent;
+        removeDropdown(word);
+    }
+    
+    const selectCounty = (input, e, word) => {
+        e.preventDefault();
+        input.value = e.target.textContent;
+        removeDropdown(word);
+    }
+    
+    
+    const fetchCitiesForSpecificCountry = async (country) => {
+        await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/cities')
+        .then(response => {
+            console.log('Data fetched for cities!');
+            cityNames = response.data;
+        })
+        .catch(err => {
+            console.log('Error: ', err.message);
+            cityNames = '';
+            return;
+        });
+    }
+    
+    const fetchDialCodeForSpecificCountry = async (country) => {
+        const inputTel = document.querySelector('#phoneNumber');
+        await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/codes')
+        .then(response => {
+            console.log('Data fetched for dialcode!');
+            inputTel.value = `${response.data.dial_code}`;
+        })
+        .catch(err => {
+            console.log('Error: ', err.message);
+            inputTel.textContent = '';
+        });
+    }
+
+    const fetchAllDialcodes = async () => {
+        try {
+            const response = await fetch('https://countriesnow.space/api/v0.1/countries/codes');
+            if(!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            };
+            const dataVar = await response.json();
+            dialcodes = dataVar.data.map(item => { return item.dial_code; });
+        } catch(err) {
+            console.log('Error:', err.message);
+            throw err;
+        }
+    }
+    
+    const fetchCountiesForSpecificCountry = async (country) => {
+        await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/states')
+        .then(response => {
+            console.log('Data fetched for states!');
+            counties = response.data.states.map(object => { return object.name });
+        })
+        .catch(err => {
+            console.log('Error: ', err.message);
+            counties = '';
+            return;
+        });
+    }
+    
+    const checker = async (object, url) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+    
+        const raw = JSON.stringify(object);
+    
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        };
+    
+        return await fetch(url, requestOptions)
+        .then(response => {
+            if(!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            };
+            return response.json();
+        })
+        .catch(err => {
+            throw err;
+        });
+    }
+
+    fetchAllDialcodes();
+
+    const countryList = () => { return countryNames; };
+    const statesList = () => { return counties; };
+    const cityList = () => { return cityNames; };
+    const dialCodeList = () => { return dialcodes; };
+
+    return { 
+        onInputChanges,
+        selectCountry,
+        selectCity,
+        selectCounty,
+        dialCodeList,
+        countryList,
+        statesList,
+        cityList
     }
 })();
 
@@ -310,6 +600,7 @@ const FormBasicGui = (function() {
                         firstNameInput.setAttribute('type', 'text');
                         firstNameInput.setAttribute('id', 'firstName')
                         firstNameInput.minLength = '2';
+                        firstNameInput.maxLength = '51';
                         firstNameInput.name = 'given-name';
                         firstNameInput.required = true;
                         firstNameInput.placeholder = 'Angelica';
@@ -354,6 +645,7 @@ const FormBasicGui = (function() {
                             lastNameInput.setAttribute('type', 'text');
                             lastNameInput.setAttribute('id', 'lastName');
                             lastNameInput.minLength = '2';
+                            lastNameInput.maxLength = '51';
                             lastNameInput.name = 'family-name';
                             lastNameInput.required = true;
                             lastNameInput.placeholder = 'Demonlord';
@@ -378,14 +670,6 @@ const FormBasicGui = (function() {
                                     lnameInputContainer.appendChild(warning2);
                                 };
                             });
-    
-            let object = {
-                container: nameContainer,
-                firstName: firstNameInput.value,
-                lastName: lastNameInput.value
-            }
-
-        return object;
     }
 
     const usernameDiv = (parent) => {
@@ -420,6 +704,7 @@ const FormBasicGui = (function() {
                         userNameInput.setAttribute('type', 'text');
                         userNameInput.setAttribute('id', 'userName');
                         userNameInput.minLength = '6';
+                        userNameInput.maxLength = '21';
                         userNameInput.name = 'name';
                         userNameInput.required = true;
                         userNameInput.placeholder = 'mattheyddrGnSlyr54';
@@ -430,7 +715,7 @@ const FormBasicGui = (function() {
                         var temp;
 
                         userNameInput.addEventListener('input', () => {
-                            warning = ValidationCheck.usernameChecker(userNameInput, userNameInput.value);
+                            warning = ValidationCheck.usernameChecker(userNameInput);
                         });
 
                         userNameInput.addEventListener('keyup', () => {
@@ -444,14 +729,6 @@ const FormBasicGui = (function() {
                                 usernameInputContainer.appendChild(warning);
                             };
                         });
-                            
-                
-                        let object = {
-                            container: userNameContainer,
-                            username: userNameInput.value,
-                        }
-
-        return object;
     }
 
     const birthdayDiv = (parent) => {
@@ -474,13 +751,12 @@ const FormBasicGui = (function() {
         birthdayContainer.appendChild(birthdayInputContainer);
 
             const dayInputContainer = document.createElement('div');
-            dayInputContainer.classList.add('input-container-w-label');
+            dayInputContainer.classList.add('input-container-w-label', 'day-input-container');
             birthdayInputContainer.appendChild(dayInputContainer);
 
-            const roundWarning1 = MsgPop.incorrectValue();
-    
                 const dayInput = document.createElement('select');
                 dayInput.setAttribute('inputmode', 'numeric');
+                dayInput.setAttribute('id', 'bdayinputday');
                 dayInput.required = true;
                 dayInputContainer.appendChild(dayInput);
                 for (let i = 0; i <= 31; i++) {
@@ -489,27 +765,36 @@ const FormBasicGui = (function() {
                         dayOption.text = 'DD';
                         dayInput.setAttribute('selected', 'selected');
                     } else {
-                        dayOption.value=`day${i}`;
+                        dayOption.value= i;
                         dayOption.text = `${i}`;
                     };
                     dayInput.appendChild(dayOption);
                 };
-
+                
+                const roundWarning1 = MsgPop.incorrectValue();
                 var counterDay = false;
                 dayInput.addEventListener('click', function() {
+                    dayInput.setCustomValidity('');
                     if(dayInput.value === 'DD') {
+                        ValidationCheck.bdayEmpty.bdayArr[0].date = false;
                         (counterDay === true) ? dayInputContainer.appendChild(roundWarning1) : (counterDay = true);
-                    } else if (dayInputContainer.lastChild === roundWarning1) roundWarning1.remove();
+                        ValidationCheck.bdayEmpty.checkDateValidity();
+                    } else {
+                        if (dayInputContainer.lastChild === roundWarning1) roundWarning1.remove();
+                        ValidationCheck.bdayEmpty.bdayArr[0].date = true;
+                        ValidationCheck.bdayEmpty.checkDateValidity();
+                    };
                 });
+                ValidationCheck.bdayEmpty.bdayArr[0].input = dayInput;
+
 
             const monthInputContainer = document.createElement('div');
             monthInputContainer.classList.add('input-container-w-label');
             birthdayInputContainer.appendChild(monthInputContainer);
 
-            const roundWarning2 = MsgPop.incorrectValue();
-
             const monthInput = document.createElement('select');
             monthInput.setAttribute('inputmode', 'numeric');
+            monthInput.setAttribute('id', 'bdayinputmonth');
             monthInput.required = true;
             monthInputContainer.appendChild(monthInput);
             for (let i = 0; i <= 12; i++) {
@@ -518,27 +803,36 @@ const FormBasicGui = (function() {
                     monthOption.text = 'MM';
                     monthInput.setAttribute('selected', 'selected');
                 } else {
-                    monthOption.value=`month${i}`;
+                    monthOption.value= i;
                     monthOption.text = `${i}`;
                 };
                 monthInput.appendChild(monthOption);
             };
 
+            const roundWarning2 = MsgPop.incorrectValue();
             var counterMonth = false;
             monthInput.addEventListener('click', function() {
+                monthInput.setCustomValidity('');
                 if(monthInput.value === 'MM') {
+                    ValidationCheck.bdayEmpty.bdayArr[1].date = false;
                     (counterMonth === true) ? monthInputContainer.appendChild(roundWarning2) : (counterMonth = true);
-                } else if (monthInputContainer.lastChild === roundWarning2) roundWarning2.remove();
+                    ValidationCheck.bdayEmpty.checkDateValidity();
+                } else {
+                    if (monthInputContainer.lastChild === roundWarning2) roundWarning2.remove();
+                    ValidationCheck.bdayEmpty.bdayArr[1].date = true;
+                    ValidationCheck.bdayEmpty.checkDateValidity();
+                };
             });
+            ValidationCheck.bdayEmpty.bdayArr[1].input = monthInput;
+
 
             const yearInputContainer = document.createElement('div');
             yearInputContainer.classList.add('input-container-w-label');
             birthdayInputContainer.appendChild(yearInputContainer);
 
-            const roundWarning3 = MsgPop.incorrectValue();
-
             const yearInput = document.createElement('select');
             yearInput.setAttribute('inputmode', 'numeric');
+            yearInput.setAttribute('id', 'bdayinputyear');
             yearInput.required = true;
             yearInputContainer.appendChild(yearInput);
             for (let i = 1939; i <= 2025; i++) {
@@ -547,27 +841,27 @@ const FormBasicGui = (function() {
                     yearOption.text = 'YYYY';
                     yearInput.setAttribute('selected', 'selected');
                 } else {
-                    yearOption.value=`year${i}`;
+                    yearOption.value= i;
                     yearOption.text = `${i}`;
                 };
                 yearInput.appendChild(yearOption);
             };
 
+            const roundWarning3 = MsgPop.incorrectValue();
             var counterYear = false;
             yearInput.addEventListener('click', function() {
+                yearInput.setCustomValidity('');
                 if(yearInput.value === 'YYYY') {
+                    ValidationCheck.bdayEmpty.bdayArr[2].date = false;
                     (counterYear === true) ? yearInputContainer.appendChild(roundWarning3) : (counterYear = true);
-                } else if (yearInputContainer.lastChild === roundWarning3) roundWarning3.remove();
+                    ValidationCheck.bdayEmpty.checkDateValidity();
+                } else {
+                    if (yearInputContainer.lastChild === roundWarning3) roundWarning3.remove();
+                    ValidationCheck.bdayEmpty.bdayArr[2].date = true;
+                    ValidationCheck.bdayEmpty.checkDateValidity();
+                };
             });
-    
-            let object = {
-                container: birthdayContainer,
-                dayInput: dayInput.value,
-                monthInput: monthInput.value,
-                yearInput: yearInput.value
-            }
-
-        return object;
+            ValidationCheck.bdayEmpty.bdayArr[2].input = yearInput;
     }
 
     const addressDiv = (parent) => {
@@ -610,6 +904,7 @@ const FormBasicGui = (function() {
                         streetNameInput.setAttribute('type', 'text');
                         streetNameInput.setAttribute('id', 'streetName');
                         streetNameInput.name = 'address';
+                        streetNameInput.maxLength = '31';
                         streetNameInput.required = true;
                         streetNameInput.placeholder = '305 Edgemont St.';
                         streetNameInputDiv.appendChild(streetNameInput);
@@ -652,6 +947,7 @@ const FormBasicGui = (function() {
                         houseNInput.setAttribute('type', 'text');
                         houseNInput.setAttribute('id', 'houseNumber');
                         houseNInput.name = 'address';
+                        houseNInput.maxLength = '6';
                         houseNInput.placeholder = '66A';
                         houseNInputDiv.appendChild(houseNInput);
 
@@ -677,17 +973,9 @@ const FormBasicGui = (function() {
                                 houseNInputContainer.appendChild(warning2);
                             };
                         });
-    
-            let object = {
-                address: `${streetNameInput.value} ${houseNInput.value}`
-            }
-
-        return object;
     }
 
-    const telephoneDiv = (parent) => {
-        const telWarning = MsgPop.requiredMsg();
-
+    const telephoneDiv = (parent) => { //fix verification
         const telContainer = document.createElement('div');
         telContainer.classList.add('info-container', 'telephone-container');
         parent.appendChild(telContainer);
@@ -712,36 +1000,75 @@ const FormBasicGui = (function() {
             wrapper.appendChild(telInputContainer);
 
                 const telInputDiv = document.createElement('div');
-                telInputDiv.classList.add('input-container');
+                telInputDiv.classList.add('input-container', 'tel-input-div');
                 telInputContainer.appendChild(telInputDiv);
-
-                    const greenTick = MsgPop.greenTick();
                 
-                        const telInput = document.createElement('input');
-                        telInput.setAttribute('type', 'number');
-                        telInput.setAttribute('id', 'phoneNumber');
-                        telInput.setAttribute('inputmode', 'tel');
-                        telInput.name = 'phone';
-                        telInput.required = true;
-                        telInput.placeholder = '+31 8765 4321';
-                        telInputDiv.appendChild(telInput);
+                        const telInput1 = document.createElement('input');
+                        telInput1.setAttribute('id', 'phoneNumber');
+                        const telInput2 = document.createElement('input');
+                        const telInput3 = document.createElement('input');
+                        const telInput4 = document.createElement('input');
+                        const tempArr = [
+                            {
+                                'div': telInput1,
+                                'placeH': '+31'
+                            }, 
+                            {
+                                'div': telInput2,
+                                'placeH': '000'
+                            }, 
+                            {
+                                'div': telInput3,
+                                'placeH': '000'
+                            },
+                            {
+                                'div': telInput4,
+                                'placeH': '000'
+                            }
+                        ];
+                        const greenTick = MsgPop.greenTick();
+                        var warning;
+                        var temp;
 
-                        telInput.addEventListener('keydown', function() {
-                            if (telInputContainer.lastChild === telWarning) telWarning.remove();
-                        });
-                        telInput.addEventListener('keyup', function() {               //add check for non numberic characters
-                            if (telInput.value === '') {
-                                if (telInputDiv.lastChild === greenTick) greenTick.remove();
-                                telInputContainer.appendChild(telWarning);
-                            } else telInputDiv.appendChild(greenTick); 
-                        });
-    
-            let object = {
-                container: telContainer,
-                telephone: telInput.value
-            }
+                        for(let i = 0; i < tempArr.length; i++) {
+                            tempArr[i].div.type = 'text';
+                            tempArr[i].div.classList.add('tel-input');
+                            tempArr[i].div.setAttribute('inputmode', 'tel');
+                            tempArr[i].div.maxLength = '4';
+                            if (i === 0) tempArr[0].div.maxLength = '7';
+                            tempArr[i].div.name = 'phone';
+                            tempArr[i].div.required = true;
+                            tempArr[i].div.placeholder = `${tempArr[i].placeH}`
+                            telInputDiv.appendChild(tempArr[i].div);
 
-        return object;
+                            tempArr[i].div.addEventListener('input', () => {
+                                warning = ValidationCheck.forTelephone(tempArr[i].div);
+                                if (telInputDiv.lastChild === warning) warning.remove();
+                            });
+
+                            tempArr[i].div.addEventListener('keyup', () => {    
+                                if(warning === undefined) {
+                                    if (telInputContainer.lastChild === temp) telInputContainer.lastChild.remove();
+                                } else {
+                                    if (telInputDiv.lastChild === greenTick) greenTick.remove();
+                                    if (telInputContainer.lastChild === temp) telInputContainer.lastChild.remove();
+                                    temp = warning;
+                                    telInputContainer.appendChild(warning);
+                                };
+                                // var temp;
+                                tempArr.map(item => {
+                                    // console.log(item);
+                                    console.log(item.div.value);
+                                    if(item.div.value) {
+                                        // temp = true;
+                                    } 
+                                    // else temp =  false;
+                                }) 
+                                // console.log(temp);
+                                // if(!(temp.includes(false))) setTimeout(() => telInputDiv.appendChild(greenTick), 2000);
+                            });
+
+                        }
     }
 
     const cityNPostalCodeDiv = () => {
@@ -774,25 +1101,25 @@ const FormBasicGui = (function() {
                         cityInput.setAttribute('type', 'text');
                         cityInput.setAttribute('id', 'cityName');
                         cityInput.minLength = '2';
+                        cityInput.maxLength = '31';
                         cityInput.name = 'city';
                         cityInput.required = true;
                         cityInput.placeholder = 'Moorpark';
                         cityInputDiv.appendChild(cityInput);
 
-                        const greenTick1 = MsgPop.greenTick();
                         var warning1;
                         var temp;
 
-                        cityInput.addEventListener('input', () => {
+                        cityInput.addEventListener('input', (e) => {
+                            if(cityInput.nextElementSibling !== null) cityInput.nextElementSibling.remove();
                             warning1 = ValidationCheck.forCity(cityInput);
+                            APIcalls.onInputChanges(cityInputDiv, e.target.value, APIcalls.selectCity, 'city', cityInput, cityInputDiv);
                         });
 
                         cityInput.addEventListener('keyup', () => {
                             if(warning1 === undefined) {
                                 if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
-                                cityInputDiv.appendChild(greenTick1);
                             } else {
-                                if (cityInputDiv.lastChild === greenTick1) greenTick1.remove();
                                 if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
                                 temp = warning1;
                                 cityInputContainer.appendChild(warning1);
@@ -816,6 +1143,7 @@ const FormBasicGui = (function() {
                         const zipcodeInput = document.createElement('input');
                         zipcodeInput.setAttribute('type', 'text');
                         zipcodeInput.name = 'zipcode';
+                        zipcodeInput.maxLength = '11';
                         zipcodeInput.required = true;
                         zipcodeInput.placeholder = '91706';
                         zipcodeInputDiv.appendChild(zipcodeInput);
@@ -839,15 +1167,6 @@ const FormBasicGui = (function() {
                                 zipcodeInputContainer.appendChild(warning2);
                             };
                         });
-
-    
-            let object = {
-                container: cityContainer,
-                zipCode: zipcodeInput.value,
-                city: cityInput.value
-            }
-
-        return object;
     }
 
     const countyNCountryDiv = () => {
@@ -858,60 +1177,16 @@ const FormBasicGui = (function() {
         addressDiv.appendChild(countryContainer);
 
         const wrapper = document.createElement('div');
-        wrapper.classList.add('wrapper-grid');
+        wrapper.classList.add('wrapper-flex-column');
         countryContainer.appendChild(wrapper);
-    
-            const countyInputContainer = document.createElement('div');
-            countyInputContainer.classList.add('input-container-w-label', 'bigger-div-74');
-            wrapper.appendChild(countyInputContainer);
-
-                const countyLabel = document.createElement('label');
-                countyLabel.classList.add('smaller-label-text');
-                countyLabel.setAttribute('for', 'countyName');
-                countyLabel.textContent = 'State / County / Province';
-                countyInputContainer.appendChild(countyLabel);
-
-                    const countyInputDiv = document.createElement('div');
-                    countyInputDiv.classList.add('input-container');
-                    countyInputContainer.appendChild(countyInputDiv);
-
-                        const countyInput = document.createElement('input');
-                        countyInput.setAttribute('type', 'text');
-                        countyInput.setAttribute('id', 'countyName');
-                        countyInput.minLength = '2';
-                        countyInput.placeholder = 'California';
-                        countyInputDiv.appendChild(countyInput);
-
-                        const greenTick1 = MsgPop.greenTick();
-                        var warning1;
-                        var temp;
-
-                        countyInput.addEventListener('input', () => {
-                            warning1 = ValidationCheck.forCounty(countyInput);
-                        });
-
-                        countyInput.addEventListener('keyup', () => {
-                            if(warning1 === null) {
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                                if (countyInputDiv.lastChild === greenTick1) greenTick1.remove();
-                            } else if(warning1 === undefined) {
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                                countyInputDiv.appendChild(greenTick1);
-                            } else {
-                                if (countyInputDiv.lastChild === greenTick1) greenTick1.remove();
-                                if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                                temp = warning1;
-                                countyInputContainer.appendChild(warning1);
-                            };
-                        });
 
         const countryInputContainer = document.createElement('div');
-        countryInputContainer.classList.add('input-container-w-label', 'smaller-div-20');
+        countryInputContainer.classList.add('input-container-w-label');
         wrapper.appendChild(countryInputContainer);
 
             const countryLabel = document.createElement('label');
             countryLabel.classList.add('smaller-label-text');
-            countyLabel.setAttribute('for', 'countryName');
+            countryLabel.setAttribute('for', 'countryName');
             countryLabel.textContent = 'Country';
             countryInputContainer.appendChild(countryLabel);
             MsgPop.turnStarRedClr(countryLabel);
@@ -924,37 +1199,72 @@ const FormBasicGui = (function() {
                     countryInput.setAttribute('type', 'text');
                     countryInput.setAttribute('id', 'countryName');
                     countryInput.name = 'country';
+                    countryInput.maxLength = '31';
                     countryInput.required = true;
                     countryInput.placeholder = 'USA';
                     countryInputDiv.appendChild(countryInput);
 
-                    const greenTick2 = MsgPop.greenTick();
                     var warning2;
                     var temp2;
 
-                    countryInput.addEventListener('input', () => {
-                        warning2 = ValidationCheck.allowOnlyLetter(countryInput);
+                    countryInput.addEventListener('input', (e) => {
+                        if(countryInput.nextElementSibling !== null) countryInput.nextElementSibling.remove();
+                        warning2 = ValidationCheck.forCountry(countryInput);
+                        APIcalls.onInputChanges(countryInputDiv, e.target.value, APIcalls.selectCountry, 'country', countryInput, countryInputDiv);
                     });
 
                     countryInput.addEventListener('keyup', () => {
                         if(warning2 === undefined) {
                             if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
-                            countryInputDiv.appendChild(greenTick2);
                         } else {
-                            if (countryInputDiv.lastChild === greenTick2) greenTick2.remove();
                             if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
                             temp2 = warning2;
                             countryInputContainer.appendChild(warning2);
                         };
                     });
-    
-            let object = {
-                container: countryContainer,
-                countyCode: countyInput.value,
-                city: countryInput.value
-            }
 
-        return object;
+        const countyInputContainer = document.createElement('div');
+        countyInputContainer.classList.add('input-container-w-label');
+        wrapper.appendChild(countyInputContainer);
+
+            const countyLabel = document.createElement('label');
+            countyLabel.classList.add('smaller-label-text');
+            countyLabel.setAttribute('for', 'countyName');
+            countyLabel.textContent = 'State / County / Province';
+            countyInputContainer.appendChild(countyLabel);
+
+                const countyInputDiv = document.createElement('div');
+                countyInputDiv.classList.add('input-container');
+                countyInputContainer.appendChild(countyInputDiv);
+
+                    const countyInput = document.createElement('input');
+                    countyInput.setAttribute('type', 'text');
+                    countyInput.setAttribute('id', 'countyName');
+                    countyInput.minLength = '2';
+                    countyInput.maxLength = '31';
+                    countyInput.placeholder = 'California';
+                    countyInputDiv.appendChild(countyInput);
+
+                    var warning1;
+                    var temp;
+
+                    countyInput.addEventListener('input', (e) => {
+                        if(countyInput.nextElementSibling !== null) countyInput.nextElementSibling.remove();
+                        warning1 = ValidationCheck.forCounty(countyInput);
+                        APIcalls.onInputChanges(countyInputDiv, e.target.value, APIcalls.selectCounty, 'county', countyInput, countyInputDiv);
+                    });
+
+                    countyInput.addEventListener('keyup', () => {
+                        if(warning1 === null) {
+                            if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                        } else if(warning1 === undefined) {
+                            if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                        } else {
+                            if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                            temp = warning1;
+                            countyInputContainer.appendChild(warning1);
+                        };
+                    });
     }
 
     const emailDiv = (parent) => {
@@ -994,7 +1304,9 @@ const FormBasicGui = (function() {
                         enterEmailInput.setAttribute('type', 'text');
                         enterEmailInput.setAttribute('id', 'setEmail');
                         enterEmailInput.setAttribute('inputmode', 'email');
+                        
                         enterEmailInput.required = true;
+                        enterEmailInput.maxLength = '31';
                         enterEmailInput.placeholder = 'oogieboogie@yahoo.com';
                         emailSetInputDiv.appendChild(enterEmailInput);
 
@@ -1004,6 +1316,9 @@ const FormBasicGui = (function() {
 
                         enterEmailInput.addEventListener('input', () => {
                             warning = ValidationCheck.emailChecker(enterEmailInput);
+                            if(confirmEmailInput.value.length !== 0) confirmEmailInput.value = '';
+                            if (confirmInputContainer.lastChild === noMatch) confirmInputContainer.lastChild.remove();
+                            if (emailConfirmInputDiv.lastChild === greenTick2) greenTick2.remove();
                         });
 
                         enterEmailInput.addEventListener('keyup', () => {
@@ -1037,28 +1352,27 @@ const FormBasicGui = (function() {
                         confirmEmailInput.setAttribute('type', 'text');
                         confirmEmailInput.classList.add('input-security');
                         confirmEmailInput.required = true;
+                        confirmEmailInput.maxLength = '31';
                         emailConfirmInputDiv.appendChild(confirmEmailInput);
 
                         const greenTick2 = MsgPop.greenTick();
                         const noMatch = MsgPop.requiredMsg('The emails do not match');
+                        var warning2;
 
                         confirmEmailInput.addEventListener('input', () => {
-                            if(confirmEmailInput.value === enterEmailInput.value) {
-                                if (confirmInputContainer.lastChild === noMatch) confirmInputContainer.lastChild.remove();
-                                emailConfirmInputDiv.appendChild(greenTick2);
-                            } else {
-                                if (emailConfirmInputDiv.lastChild === greenTick2) greenTick2.remove();
-                                confirmInputContainer.appendChild(noMatch);
+                            warning2 = ValidationCheck.emailChecker(confirmEmailInput);
+                            console.log('warning for confirm email:');
+                            console.log(warning2.textContent);
+                            if(enterEmailInput.value.length !== 0) {
+                                if(confirmEmailInput.value === enterEmailInput.value) {
+                                    if (confirmInputContainer.lastChild === noMatch) confirmInputContainer.lastChild.remove();
+                                    emailConfirmInputDiv.appendChild(greenTick2);
+                                } else {
+                                    if (emailConfirmInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                    confirmInputContainer.appendChild(noMatch);
+                                }
                             }
                         });
-    
-            let object = {
-                container: emailContainer,
-                enterEmail: enterEmailInput.value,
-                confirmEmail: confirmEmailInput.value
-            }
-
-        return object;
     }
 
     const passwordDiv = (parent) => {
@@ -1096,6 +1410,7 @@ const FormBasicGui = (function() {
                         const createpasswordInput = document.createElement('input');
                         createpasswordInput.setAttribute('type', 'text');
                         createpasswordInput.minLength = '8';
+                        createpasswordInput.maxLength = '11';
                         createpasswordInput.required = true;
                         createpasswordInput.placeholder = 'Set password';
                         createPasswordInputDiv.appendChild(createpasswordInput);
@@ -1109,8 +1424,8 @@ const FormBasicGui = (function() {
                             parentDiv.appendChild(childDiv);
 
                                 const objectArr = [];
-                                const arrText = ['At least 8 characters', 'At least one lowercase character', 'At least one uppercase character', 'At least one number', 'At least one special character', 'No space between characters']; 
-                                for(let i = 0; i < 6; i++) {
+                                const arrText = ['At least 8 characters', 'At least one lowercase character', 'At least one uppercase character', 'At least one number', 'At least one special character', 'No space between characters', 'Invalid character', 'Maximum character limit reached (10)']; 
+                                for(let i = 0; i < 8; i++) {
                                     const div = document.createElement('div');
                                     div.classList.add('dot-div');
                                     div.setAttribute('id', `dot-div-text-${i}`);
@@ -1139,6 +1454,9 @@ const FormBasicGui = (function() {
                                 createpasswordInput.addEventListener('input', () => {
                                     childDiv.classList.add('show');
                                     temp = ValidationCheck.passwordChecker(createpasswordInput, objectArr);
+                                    if(confirmPasswordInput.value.length !== 0) confirmPasswordInput.value = '';
+                                    if (confirmPasswordContainer.lastChild === noMatch) confirmPasswordContainer.lastChild.remove();
+                                    if (confirmPasswordInputDiv.lastChild === greenTick) greenTick.remove();
                                 });
 
                                 createpasswordInput.addEventListener('keyup', () => {
@@ -1168,29 +1486,28 @@ const FormBasicGui = (function() {
                         confirmPasswordInput.setAttribute('type', 'text');
                         confirmPasswordInput.classList.add('input-security');
                         confirmPasswordInput.required = true;
+                        confirmPasswordInput.maxLength = '11';
                         confirmPasswordInput.placeholder = 'Confirm password';
                         confirmPasswordInputDiv.appendChild(confirmPasswordInput);
 
                         const greenTick = MsgPop.greenTick();
                         const noMatch = MsgPop.requiredMsg('The passwords do not match');
+                        var warning2;
 
                         confirmPasswordInput.addEventListener('input', () => {
-                            if(confirmPasswordInput.value === createpasswordInput.value) {
-                                if (confirmPasswordContainer.lastChild === noMatch) confirmPasswordContainer.lastChild.remove();
-                                confirmPasswordInputDiv.appendChild(greenTick);
-                            } else {
-                                if (confirmPasswordInputDiv.lastChild === greenTick) greenTick.remove();
-                                confirmPasswordContainer.appendChild(noMatch);
-                            };
+                            warning2 = ValidationCheck.passwordConfirmChecker(confirmPasswordInput);
+                            console.log('warning for confirm password:');
+                            console.log(warning2);
+                            if(createpasswordInput.value.length !== 0) {
+                                if(confirmPasswordInput.value === createpasswordInput.value) {
+                                    if (confirmPasswordContainer.lastChild === noMatch) confirmPasswordContainer.lastChild.remove();
+                                    confirmPasswordInputDiv.appendChild(greenTick);
+                                } else {
+                                    if (confirmPasswordInputDiv.lastChild === greenTick) greenTick.remove();
+                                    confirmPasswordContainer.appendChild(noMatch);
+                                };
+                            }
                         });
-    
-            let object = {
-                container: passwordContainer,
-                setPassword: createpasswordInput.value,
-                confirmPassword: confirmPasswordInput.value
-            }
-
-        return object;
     }
 
     const basicGUI = () => {
@@ -1212,7 +1529,7 @@ const FormBasicGui = (function() {
         wrapper.appendChild(content);
 
             const form = document.createElement('form');
-            form.autocomplete = 'on';
+            form.autocomplete = 'off';
             form.setAttribute('id', 'form');
             content.appendChild(form);
 
@@ -1233,7 +1550,7 @@ const FormBasicGui = (function() {
                     submitBtn.textContent = 'SUBMIT';
                     submitBtndiv.appendChild(submitBtn);
                     submitBtn.addEventListener('click', function() {
-                        // trigger();
+                        ValidationCheck.bdayEmpty.checkBdayInput();
                     });
 
         return wrapper;
