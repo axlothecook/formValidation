@@ -25,19 +25,15 @@ const MsgPop = (function() {
         return warningDiv;
     }
 
-    const roundWarningSign = () => {
-        const roundWarning = document.createElement('object');
-        roundWarning.setAttribute('data', 'image/svg+xml');
-        roundWarning.classList.add('round-warning-svg');
-        roundWarning.data = roundWarningVar;
-        return roundWarning;
-    }
-
     const incorrectValue = () => {
         const warningDiv = document.createElement('div');
         warningDiv.classList.add('warning-div');
 
-            warningDiv.appendChild(roundWarningSign());
+            const roundWarning = document.createElement('object');
+            roundWarning.setAttribute('data', 'image/svg+xml');
+            roundWarning.classList.add('round-warning-svg');
+            roundWarning.data = roundWarningVar;
+            warningDiv.appendChild(roundWarning);
 
             const warningText = document.createElement('h3');
             warningText.classList.add('warning-text');
@@ -71,7 +67,7 @@ const MsgPop = (function() {
 
     const turnStarRedClr = (text) => {
         const star = document.createElement('span');
-        star.classList.add('red-star');
+        star.classList.add('grey-star');
         star.textContent = '*';
         text.appendChild(star);
     }
@@ -83,6 +79,7 @@ const MsgPop = (function() {
         greenTick,
         turnStarRedClr
     }
+
 })();
 
 const ChangeDivClrs = (function(){
@@ -147,18 +144,16 @@ const ValidationCheck = (function(){
         } else return;
     }
 
+    // evaluates bithday fields
     const bdayEmpty = {
         bdayArr: [
             {
-                'date': false,
                 'input': null
             },
             {
-                'date': false,
                 'input': null
             },
             {
-                'date': false,
                 'input': null
             }
         ],
@@ -171,16 +166,18 @@ const ValidationCheck = (function(){
 
         checkDateValidity() {
             let date = `${this.bdayArr[1].input.value}/${this.bdayArr[0].input.value}/${this.bdayArr[2].input.value}`;
-            console.log(date);
+            this.bdayArr.forEach(object => {
+                if((object.input.value === 'DD') || (object.input.value === 'MM') || (object.input.value === 'YYYY')) {
+                    return object.input.value;
+                };
+            });
+
             if (/^[^a-zA-z]+$/gm.test(date)) {
-                // let check = new Date(date);
-                if(isNaN(new Date(date))) {
-                    console.log('invalid date');
-                } else {
-                    console.log('valid date');
-                }
-                console.log(date);
-            };
+                var tempDate = new Date(date).toLocaleDateString();
+                if (date === tempDate) {
+                    return false;
+                } else return 'invalid date';
+            } else return true;
         }
     }
 
@@ -309,42 +306,81 @@ const ValidationCheck = (function(){
     
     // for password
     const passwordChecker = (text, objectArr) => {
-        if(text.value === '') return null;
+        if(text.value === '') {
+            for(let i = 0; i < 8; i++) {
+                ChangeDivClrs.changeToRed(objectArr[i].text, objectArr[i].dot);
+                if(i >= 5) ChangeDivClrs.changeToGreen(objectArr[i].text, objectArr[i].dot);
+            };
+            submitBtnChecker.globalObj.setPassword = false;
+            return null;
+        }
 
         if(text.validity.tooShort) {
             ChangeDivClrs.changeToRed(objectArr[0].text, objectArr[0].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[0].text, objectArr[0].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[0].text, objectArr[0].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
 
         if(/[a-z]+/gm.test(text.value)) {
             ChangeDivClrs.changeToGreen(objectArr[1].text, objectArr[1].dot);
-        } else ChangeDivClrs.changeToRed(objectArr[1].text, objectArr[1].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        } else {
+            ChangeDivClrs.changeToRed(objectArr[1].text, objectArr[1].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        }
 
         if(/[A-Z]+/gm.test(text.value)) {
             ChangeDivClrs.changeToGreen(objectArr[2].text, objectArr[2].dot);
-        } else ChangeDivClrs.changeToRed(objectArr[2].text, objectArr[2].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        } else {
+            ChangeDivClrs.changeToRed(objectArr[2].text, objectArr[2].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        }
 
         if(/^[^\d]+$/gm.test(text.value)) {
             ChangeDivClrs.changeToRed(objectArr[3].text, objectArr[3].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[3].text, objectArr[3].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[3].text, objectArr[3].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
 
         if(/^[^?!@#&%^_,.]+$/gm.test(text.value)) {
             ChangeDivClrs.changeToRed(objectArr[4].text, objectArr[4].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[4].text, objectArr[4].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[4].text, objectArr[4].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
 
         if (!(/^[^\s]+$/gm.test(text.value))) {
             ChangeDivClrs.changeToRed(objectArr[5].text, objectArr[5].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[5].text, objectArr[5].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[5].text, objectArr[5].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
 
         if (!(/^[^|\\\/*$%\](){}();:[<>'"~`+=]+$/gm.test(text.value))) {
             ChangeDivClrs.changeToRed(objectArr[6].text, objectArr[6].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[6].text, objectArr[6].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[6].text, objectArr[6].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
 
         if (text.value.length > 10) {
             ChangeDivClrs.changeToRed(objectArr[7].text, objectArr[7].dot);
-        } else ChangeDivClrs.changeToGreen(objectArr[7].text, objectArr[7].dot);
+            submitBtnChecker.globalObj.setPassword = false;
+        } else {
+            ChangeDivClrs.changeToGreen(objectArr[7].text, objectArr[7].dot);
+            submitBtnChecker.globalObj.setPassword = true;
+        }
     }
 
-    //for password confirmation
+    // for password confirmation
     const passwordConfirmChecker = (text) => {
         if(text.value === '') return null;
 
@@ -367,6 +403,36 @@ const ValidationCheck = (function(){
         } else true;
     }
 
+    // checks if every field does not have any errors; if so, allows submission of data
+    const submitBtnChecker = {
+        greenTick: MsgPop.greenTick(),
+
+        globalObj: {
+            fName: true,
+            lName: true,
+            uName: true,
+            bDay: true,
+            country: true,
+            state: true,
+            city: true,
+            zipcode: true,
+            street: true,
+            houseNumber: true,
+            telephone: true,
+            createEmail: true,
+            confirmEmail: true,
+            setPassword: true,
+            confirmPassword: true
+        },
+
+        checkArr() {
+            for(const key in this.globalObj) {
+                if (!this.globalObj[key]) return false;
+            };
+            return true;
+        }
+    }
+
     return {
         allowLetterAndDot,
         forCountry,
@@ -379,8 +445,10 @@ const ValidationCheck = (function(){
         emailChecker,
         usernameChecker,
         passwordChecker,
-        passwordConfirmChecker
+        passwordConfirmChecker,
+        submitBtnChecker
     }
+
 })();
 
 const APIcalls = (function(){
@@ -395,8 +463,6 @@ const APIcalls = (function(){
     
         countryNames = countryData.map(country => { return country.name.common; });
     }
-    
-    fetchData();
     
     const onInputChanges = (parent, input, func, word, inputDiv, inputDivParent) => {
         removeDropdown(word);
@@ -462,11 +528,9 @@ const APIcalls = (function(){
         removeDropdown(word);
     }
     
-    
     const fetchCitiesForSpecificCountry = async (country) => {
         await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/cities')
         .then(response => {
-            console.log('Data fetched for cities!');
             cityNames = response.data;
         })
         .catch(err => {
@@ -480,7 +544,6 @@ const APIcalls = (function(){
         const inputTel = document.querySelector('#phoneNumber');
         await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/codes')
         .then(response => {
-            console.log('Data fetched for dialcode!');
             inputTel.value = `${response.data.dial_code}`;
         })
         .catch(err => {
@@ -506,7 +569,6 @@ const APIcalls = (function(){
     const fetchCountiesForSpecificCountry = async (country) => {
         await checker({"country": country}, 'https://countriesnow.space/api/v0.1/countries/states')
         .then(response => {
-            console.log('Data fetched for states!');
             counties = response.data.states.map(object => { return object.name });
         })
         .catch(err => {
@@ -541,6 +603,7 @@ const APIcalls = (function(){
         });
     }
 
+    fetchData();
     fetchAllDialcodes();
 
     const countryList = () => { return countryNames; };
@@ -558,6 +621,7 @@ const APIcalls = (function(){
         statesList,
         cityList
     }
+
 })();
 
 
@@ -618,12 +682,15 @@ const FormBasicGui = (function() {
                             if(warning1 === undefined) {
                                 if (fnameInputContainer.lastChild === temp) fnameInputContainer.lastChild.remove();
                                 firstNameInputDiv.appendChild(greenTick1);
+                                ValidationCheck.submitBtnChecker.globalObj.fName = true;
                             } else {
                                 if (firstNameInputDiv.lastChild === greenTick1) greenTick1.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.fName = false;
                                 if (fnameInputContainer.lastChild === temp) fnameInputContainer.lastChild.remove();
                                 temp = warning1;
                                 fnameInputContainer.appendChild(warning1);
                             };
+                            
                         });
 
                 const lnameInputContainer = document.createElement('div');
@@ -663,8 +730,10 @@ const FormBasicGui = (function() {
                                 if(warning2 === undefined) {
                                     if(lnameInputContainer.lastChild === temp2) lnameInputContainer.lastChild.remove();
                                     lastNameInputDiv.appendChild(greenTick2);
+                                    ValidationCheck.submitBtnChecker.globalObj.lName = true;
                                 } else {
                                     if (lastNameInputDiv.lastChild === greenTick2) greenTick1.remove();
+                                    ValidationCheck.submitBtnChecker.globalObj.lName = false;
                                     if (lnameInputContainer.lastChild === temp2) lnameInputContainer.lastChild.remove();
                                     temp2 = warning2;
                                     lnameInputContainer.appendChild(warning2);
@@ -722,8 +791,10 @@ const FormBasicGui = (function() {
                             if(warning === undefined) {
                                 if (usernameInputContainer.lastChild === temp) usernameInputContainer.lastChild.remove();
                                 usernameInputDiv.appendChild(greenTick);
+                                ValidationCheck.submitBtnChecker.globalObj.uName = true;
                             } else {
                                 if (usernameInputDiv.lastChild === greenTick) greenTick.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.uName = false;
                                 if (usernameInputContainer.lastChild === temp) usernameInputContainer.lastChild.remove();
                                 temp = warning;
                                 usernameInputContainer.appendChild(warning);
@@ -770,23 +841,6 @@ const FormBasicGui = (function() {
                     };
                     dayInput.appendChild(dayOption);
                 };
-                
-                const roundWarning1 = MsgPop.incorrectValue();
-                var counterDay = false;
-                dayInput.addEventListener('click', function() {
-                    dayInput.setCustomValidity('');
-                    if(dayInput.value === 'DD') {
-                        ValidationCheck.bdayEmpty.bdayArr[0].date = false;
-                        (counterDay === true) ? dayInputContainer.appendChild(roundWarning1) : (counterDay = true);
-                        ValidationCheck.bdayEmpty.checkDateValidity();
-                    } else {
-                        if (dayInputContainer.lastChild === roundWarning1) roundWarning1.remove();
-                        ValidationCheck.bdayEmpty.bdayArr[0].date = true;
-                        ValidationCheck.bdayEmpty.checkDateValidity();
-                    };
-                });
-                ValidationCheck.bdayEmpty.bdayArr[0].input = dayInput;
-
 
             const monthInputContainer = document.createElement('div');
             monthInputContainer.classList.add('input-container-w-label');
@@ -809,23 +863,6 @@ const FormBasicGui = (function() {
                 monthInput.appendChild(monthOption);
             };
 
-            const roundWarning2 = MsgPop.incorrectValue();
-            var counterMonth = false;
-            monthInput.addEventListener('click', function() {
-                monthInput.setCustomValidity('');
-                if(monthInput.value === 'MM') {
-                    ValidationCheck.bdayEmpty.bdayArr[1].date = false;
-                    (counterMonth === true) ? monthInputContainer.appendChild(roundWarning2) : (counterMonth = true);
-                    ValidationCheck.bdayEmpty.checkDateValidity();
-                } else {
-                    if (monthInputContainer.lastChild === roundWarning2) roundWarning2.remove();
-                    ValidationCheck.bdayEmpty.bdayArr[1].date = true;
-                    ValidationCheck.bdayEmpty.checkDateValidity();
-                };
-            });
-            ValidationCheck.bdayEmpty.bdayArr[1].input = monthInput;
-
-
             const yearInputContainer = document.createElement('div');
             yearInputContainer.classList.add('input-container-w-label');
             birthdayInputContainer.appendChild(yearInputContainer);
@@ -847,21 +884,59 @@ const FormBasicGui = (function() {
                 yearInput.appendChild(yearOption);
             };
 
-            const roundWarning3 = MsgPop.incorrectValue();
-            var counterYear = false;
-            yearInput.addEventListener('click', function() {
-                yearInput.setCustomValidity('');
-                if(yearInput.value === 'YYYY') {
-                    ValidationCheck.bdayEmpty.bdayArr[2].date = false;
-                    (counterYear === true) ? yearInputContainer.appendChild(roundWarning3) : (counterYear = true);
-                    ValidationCheck.bdayEmpty.checkDateValidity();
-                } else {
-                    if (yearInputContainer.lastChild === roundWarning3) roundWarning3.remove();
-                    ValidationCheck.bdayEmpty.bdayArr[2].date = true;
-                    ValidationCheck.bdayEmpty.checkDateValidity();
-                };
-            });
-            ValidationCheck.bdayEmpty.bdayArr[2].input = yearInput;
+            const dateArr = [
+                {
+                    input: dayInput,
+                    inputContainer: dayInputContainer,
+                    counter: true,
+                    roundWarning: MsgPop.incorrectValue()
+                },
+                {
+                    input: monthInput,
+                    inputContainer: monthInputContainer,
+                    counter: true,
+                    roundWarning: MsgPop.incorrectValue()
+                },
+                {
+                    input: yearInput,
+                    inputContainer: yearInputContainer,
+                    counter: true,
+                    roundWarning: MsgPop.incorrectValue()
+                }
+            ];
+
+            const invalidDateWarning = MsgPop.requiredMsg('Date does not exist');
+            invalidDateWarning.classList.add('warning-bDay-div');
+            const greenTick = MsgPop.greenTick();
+            greenTick.classList.add('for-bday-div');
+            var warning;
+
+            for(let i = 0; i < dateArr.length; i++) {
+                ValidationCheck.bdayEmpty.bdayArr[i].input = dateArr[i].input;
+                dateArr[i].input.addEventListener('click', () => {
+                    dateArr[i].input.setCustomValidity('');
+                    warning = ValidationCheck.bdayEmpty.checkDateValidity();
+
+                    if((dateArr[i].input.value === 'DD') || (dateArr[i].input.value === 'MM') || (dateArr[i].input.value === 'YYYY')) {
+                        (dateArr[i].counter === false) ? dateArr[i].inputContainer.appendChild(dateArr[i].roundWarning) : (dateArr[i].counter = false);
+                        if (birthdayInputContainer.lastChild === invalidDateWarning) invalidDateWarning.remove();
+                        if (birthdayInputContainer.lastChild === greenTick) greenTick.remove();
+                        ValidationCheck.submitBtnChecker.globalObj.bDay = false; 
+                    } else {
+                        if(dateArr[i].inputContainer.lastChild === dateArr[i].roundWarning) dateArr[i].inputContainer.lastChild.remove();
+                    };
+
+                    if (warning === 'invalid date') {
+                        if (birthdayInputContainer.lastChild === greenTick) greenTick.remove();
+                        ValidationCheck.submitBtnChecker.globalObj.bDay = false;
+                        birthdayInputContainer.appendChild(invalidDateWarning);
+                    } else if (warning === false) {
+                        if (birthdayInputContainer.lastChild === invalidDateWarning) invalidDateWarning.remove();
+                        birthdayInputContainer.appendChild(greenTick);
+                        ValidationCheck.submitBtnChecker.globalObj.bDay = true; 
+                    } else return;
+                });
+            };
     }
 
     const addressDiv = (parent) => {
@@ -921,8 +996,10 @@ const FormBasicGui = (function() {
                             if(warning1 === undefined) {
                                 if (streetInputContainer.lastChild === temp) streetInputContainer.lastChild.remove();
                                 streetNameInputDiv.appendChild(greenTick1);
+                                ValidationCheck.submitBtnChecker.globalObj.street = true;
                             } else {
                                 if (streetNameInputDiv.lastChild === greenTick1) greenTick1.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.street = false;
                                 if (streetInputContainer.lastChild === temp) streetInputContainer.lastChild.remove();
                                 temp = warning1;
                                 streetInputContainer.appendChild(warning1);
@@ -966,8 +1043,10 @@ const FormBasicGui = (function() {
                             } else if(warning2 === undefined) {
                                 if (houseNInputContainer.lastChild === temp2) houseNInputContainer.lastChild.remove();
                                 houseNInputDiv.appendChild(greenTick2);
+                                ValidationCheck.submitBtnChecker.globalObj.houseNumber = true;
                             } else {
                                 if (houseNInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.houseNumber = false;
                                 if (houseNInputContainer.lastChild === temp2) houseNInputContainer.lastChild.remove();
                                 temp2 = warning2;
                                 houseNInputContainer.appendChild(warning2);
@@ -975,7 +1054,7 @@ const FormBasicGui = (function() {
                         });
     }
 
-    const telephoneDiv = (parent) => { //fix verification
+    const telephoneDiv = (parent) => {
         const telContainer = document.createElement('div');
         telContainer.classList.add('info-container', 'telephone-container');
         parent.appendChild(telContainer);
@@ -1051,21 +1130,18 @@ const FormBasicGui = (function() {
                                     if (telInputContainer.lastChild === temp) telInputContainer.lastChild.remove();
                                 } else {
                                     if (telInputDiv.lastChild === greenTick) greenTick.remove();
+                                    ValidationCheck.submitBtnChecker.globalObj.telephone = false;
                                     if (telInputContainer.lastChild === temp) telInputContainer.lastChild.remove();
                                     temp = warning;
                                     telInputContainer.appendChild(warning);
                                 };
-                                // var temp;
-                                tempArr.map(item => {
-                                    // console.log(item);
-                                    console.log(item.div.value);
-                                    if(item.div.value) {
-                                        // temp = true;
-                                    } 
-                                    // else temp =  false;
-                                }) 
-                                // console.log(temp);
-                                // if(!(temp.includes(false))) setTimeout(() => telInputDiv.appendChild(greenTick), 2000);
+                                var counter = 0;
+                                for(let i = 0; i < tempArr.length; i++) {
+                                    if(i === 0) ((tempArr[i].div.value.length === 4) || (tempArr[i].div.value.length === 3)) ? counter++ : counter--;
+                                    if(i > 0) (tempArr[i].div.value.length === 3) ? counter++ : counter--;
+                                    telInputDiv.appendChild(greenTick);
+                                    ValidationCheck.submitBtnChecker.globalObj.telephone = true;
+                                };
                             });
 
                         }
@@ -1119,8 +1195,10 @@ const FormBasicGui = (function() {
                         cityInput.addEventListener('keyup', () => {
                             if(warning1 === undefined) {
                                 if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.city = true;
                             } else {
                                 if (cityInputContainer.lastChild === temp) cityInputContainer.lastChild.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.city = false;
                                 temp = warning1;
                                 cityInputContainer.appendChild(warning1);
                             };
@@ -1160,8 +1238,10 @@ const FormBasicGui = (function() {
                             if(warning2 === undefined) {
                                 if (zipcodeInputContainer.lastChild === temp2) zipcodeInputContainer.lastChild.remove();
                                 zipcodeInputDiv.appendChild(greenTick2);
+                                ValidationCheck.submitBtnChecker.globalObj.zipcode = true;
                             } else {
                                 if (zipcodeInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.zipcode = false;
                                 if (zipcodeInputContainer.lastChild === temp2) zipcodeInputContainer.lastChild.remove();
                                 temp2 = warning2;
                                 zipcodeInputContainer.appendChild(warning2);
@@ -1216,8 +1296,10 @@ const FormBasicGui = (function() {
                     countryInput.addEventListener('keyup', () => {
                         if(warning2 === undefined) {
                             if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
+                            ValidationCheck.submitBtnChecker.globalObj.country = true;
                         } else {
                             if (countryInputContainer.lastChild === temp2) countryInputContainer.lastChild.remove();
+                            ValidationCheck.submitBtnChecker.globalObj.country = false;
                             temp2 = warning2;
                             countryInputContainer.appendChild(warning2);
                         };
@@ -1255,12 +1337,12 @@ const FormBasicGui = (function() {
                     });
 
                     countyInput.addEventListener('keyup', () => {
-                        if(warning1 === null) {
+                        if((warning1 === null) || (warning1 === undefined)) {
                             if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
-                        } else if(warning1 === undefined) {
-                            if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                            ValidationCheck.submitBtnChecker.globalObj.state = true;
                         } else {
                             if (countyInputContainer.lastChild === temp) countyInputContainer.lastChild.remove();
+                            ValidationCheck.submitBtnChecker.globalObj.state = false;
                             temp = warning1;
                             countyInputContainer.appendChild(warning1);
                         };
@@ -1325,8 +1407,10 @@ const FormBasicGui = (function() {
                             if(warning === undefined) {
                                 if (emailInputContainer.lastChild === temp) emailInputContainer.lastChild.remove();
                                 emailSetInputDiv.appendChild(greenTick1);
+                                ValidationCheck.submitBtnChecker.globalObj.createEmail = true;
                             } else {
                                 if (emailSetInputDiv.lastChild === greenTick1) greenTick1.remove();
+                                ValidationCheck.submitBtnChecker.globalObj.createEmail = false;
                                 if (emailInputContainer.lastChild === temp) emailInputContainer.lastChild.remove();
                                 temp = warning;
                                 emailInputContainer.appendChild(warning);
@@ -1360,15 +1444,14 @@ const FormBasicGui = (function() {
                         var warning2;
 
                         confirmEmailInput.addEventListener('input', () => {
-                            warning2 = ValidationCheck.emailChecker(confirmEmailInput);
-                            console.log('warning for confirm email:');
-                            console.log(warning2.textContent);
                             if(enterEmailInput.value.length !== 0) {
                                 if(confirmEmailInput.value === enterEmailInput.value) {
                                     if (confirmInputContainer.lastChild === noMatch) confirmInputContainer.lastChild.remove();
                                     emailConfirmInputDiv.appendChild(greenTick2);
+                                    ValidationCheck.submitBtnChecker.globalObj.confirmEmail = true;
                                 } else {
                                     if (emailConfirmInputDiv.lastChild === greenTick2) greenTick2.remove();
+                                    ValidationCheck.submitBtnChecker.globalObj.confirmEmail = false;
                                     confirmInputContainer.appendChild(noMatch);
                                 }
                             }
@@ -1492,18 +1575,16 @@ const FormBasicGui = (function() {
 
                         const greenTick = MsgPop.greenTick();
                         const noMatch = MsgPop.requiredMsg('The passwords do not match');
-                        var warning2;
 
                         confirmPasswordInput.addEventListener('input', () => {
-                            warning2 = ValidationCheck.passwordConfirmChecker(confirmPasswordInput);
-                            console.log('warning for confirm password:');
-                            console.log(warning2);
                             if(createpasswordInput.value.length !== 0) {
                                 if(confirmPasswordInput.value === createpasswordInput.value) {
                                     if (confirmPasswordContainer.lastChild === noMatch) confirmPasswordContainer.lastChild.remove();
                                     confirmPasswordInputDiv.appendChild(greenTick);
+                                    ValidationCheck.submitBtnChecker.globalObj.confirmPassword = true;
                                 } else {
                                     if (confirmPasswordInputDiv.lastChild === greenTick) greenTick.remove();
+                                    ValidationCheck.submitBtnChecker.globalObj.confirmPassword = false;
                                     confirmPasswordContainer.appendChild(noMatch);
                                 };
                             }
@@ -1549,8 +1630,9 @@ const FormBasicGui = (function() {
                     submitBtn.setAttribute('id', 'submit-btn');
                     submitBtn.textContent = 'SUBMIT';
                     submitBtndiv.appendChild(submitBtn);
-                    submitBtn.addEventListener('click', function() {
+                    submitBtn.addEventListener('click', function(e) {
                         ValidationCheck.bdayEmpty.checkBdayInput();
+                        if(!ValidationCheck.submitBtnChecker.checkArr()) e.preventDefault();
                     });
 
         return wrapper;

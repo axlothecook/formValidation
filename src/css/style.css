@@ -202,6 +202,7 @@ input::-webkit-inner-spin-button {
 }
 
 .birthday-input-container {
+    position: relative;
     display: flex;
     justify-content: space-between;
     height: 90px;
@@ -212,6 +213,18 @@ input::-webkit-inner-spin-button {
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.warning-bDay-div {
+    position: absolute;
+    top: 20%;
+    right: -11rem;
+}
+
+.for-bday-div {
+    position: absolute;
+    top: 18%;
+    right: -40px;
 }
 
 .warning-div:hover{
@@ -229,7 +242,7 @@ input::-webkit-inner-spin-button {
     font-size: 15px;
 }
 
-.red-star { color: grey; }
+.grey-star { color: grey; }
 
 .green-tick-svg {
     width: 20px;
