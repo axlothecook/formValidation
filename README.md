@@ -9,7 +9,7 @@ I'm using [Postman API](https://documenter.getpostman.com/view/1134062/T1LJjU52)
 ## ***Do you employ any frameworks or Tailwind?***
 No not yet, I still have to learn them.
 
-## ***how are you validating inputs?***
+## ***How are you validating inputs?***
 If the fetched country dial code was edited, I fetch all dial codes of all countries. That list is then parsed throught and compares the newly edited dial code to all dial codes it sotres. If it finds a dial code matching the new one, there's no error, otherwise warning shows.
 For this one and all other inputs I'm using Regex to filter for any characters that are/aren't alphabetical, numberical, white space, special ones, etc. and show warning according if they do or don't appear.
 Every input also has maximum allowed character limited, and some have minimum char limit too.
