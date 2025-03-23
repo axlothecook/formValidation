@@ -133,14 +133,14 @@ const ValidationCheck = (function(){
             return MsgPop.requiredMsg(msgArr[0]);
         } else if(text.validity.tooShort) {
             return MsgPop.requiredMsg(msgArr[1]);
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.\s]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[2]);
         } else if(text.value.length === 21) {
             return MsgPop.requiredMsg(msgArr[4]);
         } else if(/^[^[a-zA-Z]+$/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[5]);
         } else if(text.value === 'testing') {
             return MsgPop.requiredMsg(msgArr[3]);
-        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]+$/gm.test(text.value)) {
-            return MsgPop.requiredMsg(msgArr[2]);
         } else return;
     }
 
