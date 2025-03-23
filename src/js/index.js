@@ -188,14 +188,15 @@ const ValidationCheck = (function(){
         const msgArr = ['Empty field', `Maximum characters limit exceeded`, `Missing '+' character in front of the number`, 'Invalid character', 'Must include at least one numberical character', `Dial code ${input.value} does not exist`];
         if(input.value === '') {
             return MsgPop.requiredMsg(msgArr[0]);
-        } else if((input.value.length > 1) && input.hasAttribute('id')) {
-            var dialcodes = APIcalls.dialCodeList();
-            if(!dialcodes.includes(input.value)) return MsgPop.requiredMsg(msgArr[5]);
         } else if (input.hasAttribute('id')) {
             if(!(/^[+\d\s]+$/gm.test(input.value))) return MsgPop.requiredMsg(msgArr[3]);
             if(/^[^+]+$/gm.test(input.value)) return MsgPop.requiredMsg(msgArr[2]);
             if(/^[^\d]+$/gm.test(input.value)) return MsgPop.requiredMsg(msgArr[4]);
-            if((input.value.length === 7)) return MsgPop.requiredMsg(msgArr[1]);
+            if((input.value.length === 5)) return MsgPop.requiredMsg(msgArr[1]);
+            if((input.value.length > 1)) {
+                var dialcodes = APIcalls.dialCodeList();
+                if(!dialcodes.includes(input.value)) return MsgPop.requiredMsg(msgArr[5]);
+            };
         } else if (!(/^[\d]+$/gm.test(input.value))) {
             return MsgPop.requiredMsg(msgArr[3]);
         } else if(input.value.length > 3) {
@@ -1116,11 +1117,11 @@ const FormBasicGui = (function() {
                             tempArr[i].div.classList.add('tel-input');
                             tempArr[i].div.setAttribute('inputmode', 'tel');
                             tempArr[i].div.maxLength = '4';
-                            if (i === 0) tempArr[0].div.maxLength = '7';
+                            if (i === 0) tempArr[0].div.maxLength = '5';
                             tempArr[i].div.name = 'phone';
                             tempArr[i].div.required = true;
                             tempArr[i].div.placeholder = `${tempArr[i].placeH}`
-                            telInputDiv.appendChild(tempArr[i].div);
+                            telInputDiv.appendChild(tempArr[i].div);4
 
                             tempArr[i].div.addEventListener('input', () => {
                                 warning = ValidationCheck.forTelephone(tempArr[i].div);
@@ -1139,9 +1140,9 @@ const FormBasicGui = (function() {
                                 };
                                 var counter = 0;
                                 for(let i = 0; i < tempArr.length; i++) {
-                                    if(i === 0) ((tempArr[i].div.value.length === 4) || (tempArr[i].div.value.length === 3)) ? counter++ : counter--;
+                                    if(i === 0) (1 < tempArr[i].div.value.length < 5) ? counter++ : counter--;
                                     if(i > 0) (tempArr[i].div.value.length === 3) ? counter++ : counter--;
-                                    telInputDiv.appendChild(greenTick);
+                                    if((counter === 4) && (warning === undefined)) telInputDiv.appendChild(greenTick);
                                     ValidationCheck.submitBtnChecker.globalObj.telephone = true;
                                 };
                             });
