@@ -290,7 +290,7 @@ const ValidationCheck = (function(){
             return MsgPop.requiredMsg(msgArr[0]);
         } else if(text.value.length === 31) {
             return MsgPop.requiredMsg(msgArr[8]);
-        } else if(/[|\\\/*?!#$%\]^&(){}();:[<>'"~`+=,]/gm.test(text.value)) {
+        } else if(/[|\\\/*?!#$%\]^&(){}();:[<>'"~`+=,\s]/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[1]);
         } else if(/^[^[a-zA-Z]+$/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[7]);
