@@ -133,7 +133,9 @@ const ValidationCheck = (function(){
             return MsgPop.requiredMsg(msgArr[0]);
         } else if(text.validity.tooShort) {
             return MsgPop.requiredMsg(msgArr[1]);
-        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.\s]+$/gm.test(text.value)) {
+        } else if (/[|\\\/*?!@#$%\]^&(){}()_;:[<>'"~`+=,.]+$/gm.test(text.value)) {
+            return MsgPop.requiredMsg(msgArr[2]);
+        } else if(/\s/gm.test(text.value)) {
             return MsgPop.requiredMsg(msgArr[2]);
         } else if(text.value.length === 21) {
             return MsgPop.requiredMsg(msgArr[4]);
@@ -732,7 +734,7 @@ const FormBasicGui = (function() {
                                     lastNameInputDiv.appendChild(greenTick2);
                                     ValidationCheck.submitBtnChecker.globalObj.lName = true;
                                 } else {
-                                    if (lastNameInputDiv.lastChild === greenTick2) greenTick1.remove();
+                                    if (lastNameInputDiv.lastChild === greenTick2) greenTick2.remove();
                                     ValidationCheck.submitBtnChecker.globalObj.lName = false;
                                     if (lnameInputContainer.lastChild === temp2) lnameInputContainer.lastChild.remove();
                                     temp2 = warning2;
