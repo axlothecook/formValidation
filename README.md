@@ -19,8 +19,8 @@ The focus of this project was to gain experience with forms, fetching data and v
 
 ## Any notes on improvement for next time?
 + Finish logic first, then build GUI around it
-+ use classes over id's for css
-+ use id's over classes for fetching an element
++ use classes over id for css
++ use id over classes for fetching an element
 
 # Demo
 [![ssss](https://github.com/user-attachments/assets/95d3d5a0-5e72-4362-bf7b-e5c1fbc81ba2)](https://youtu.be/pg-GD2zO77I)
