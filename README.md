@@ -10,9 +10,10 @@ I'm using [Postman API](https://documenter.getpostman.com/view/1134062/T1LJjU52)
 No not yet, I still have to learn them.
 
 ## ***How are you validating inputs?***
-If the fetched country dial code was edited, I fetch all dial codes of all countries. That list is then parsed throught and compares the newly edited dial code to all dial codes it sotres. If it finds a dial code matching the new one, there's no error, otherwise warning shows.
-For this one and all other inputs I'm using Regex to filter for any characters that are/aren't alphabetical, numberical, white space, special ones, etc. and show warning according if they do or don't appear.
++ If the fetched country dial code was edited, I fetch all dial codes of all countries. That list is then parsed throught and compares the newly edited dial code to all dial codes it sotres. If it finds a dial code matching the new one, there's no error, otherwise warning shows.
++ For this one and all other inputs I'm using Regex to filter for any characters that are/aren't alphabetical, numberical, white space, special ones, etc. and show warning according if they do or don't appear.
 Every input also has maximum allowed character limited, and some have minimum char limit too.
++ On submit button, there are three validations. They all prevent data submission if they aren't true (valid). First, all input fields need to have some input. Second, a custom function ensures birthday selection dropdowns have inputs too. Third one all required fileds need to have a green tick (be true), and if optional fields have input, they need a tick too. If there's any errors anywhere, form won't be submitted. If optional fields aren't submitted, but there's no errors, form will be submitted.
 
 ## ***How is project scalability?***
 The focus of this project was to gain experience with forms, fetching data and validations, so scalability was not in mind. The project poorly scales down on screens smaller than 1200px width.
