@@ -14,9 +14,9 @@ No not yet, I still have to learn them.
 + For this one and all other inputs I'm using Regex to filter for any characters that are/aren't alphabetical, numberical, white space, special ones, etc. and show warnings whether they do or don't appear.
 Every input also has maximum allowed character limited, and some have minimum character limit too.
 + On submit button, there are three validations. They all prevent data submission if they aren't true (valid):  
-    (1) All input fields need to have some input.  
-    (2) A custom function ensures birthday selection dropdowns have inputs too  
-    (3) All required fields need to have a green tick (be true), and if optional fields have input, they need a tick too. If there are any errors (be false), including optional fields, the form won't be submitted. If optional fields are empty, but all required fields have the green tick, the form will be submitted.
+    1. All input fields need to have some input.  
+    2. A custom function ensures birthday selection dropdowns have inputs too  
+    3. All required fields need to have a green tick (be true), and if optional fields have input, they need a tick too. If there are any errors (be false), including optional fields, the form won't be submitted. If optional fields are empty, but all required fields have the green tick, the form will be submitted.
 
 ## ***How is project scalability?***
 The focus of this project was to gain experience with forms, fetching data and validations, so scalability was not in mind. The project poorly scales down on screens smaller than 1200px width.
