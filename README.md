@@ -1,5 +1,8 @@
 # forms
 
+# Demo video
+[![ssss](https://github.com/user-attachments/assets/95d3d5a0-5e72-4362-bf7b-e5c1fbc81ba2)](https://youtu.be/pg-GD2zO77I)
+
 ## What is forms?
 Forms is a practice project where I play around with creating a registration form, API fetching, async & await, different validations & different warnings on input fields and submiting the form. The original task was to practice on name, email and password inputs, but I believe I took it too far.
 
@@ -25,6 +28,3 @@ The focus of this project was to gain experience with forms, fetching data and v
 + Finish logic first, then build GUI around it
 + use classes over id for css
 + use id over classes for fetching an element
-
-# Demo video
-[![ssss](https://github.com/user-attachments/assets/95d3d5a0-5e72-4362-bf7b-e5c1fbc81ba2)](https://youtu.be/pg-GD2zO77I)
